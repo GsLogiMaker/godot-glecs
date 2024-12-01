@@ -123,7 +123,7 @@ func test_strings():
 
 	var entity:= GFEntity.spawn(world) \
 		.set_name("Test") \
-		.add_component(Strings, ["", "po"])
+		.add_component(Strings, "", "po")
 	var strings:Strings = entity.get_component(Strings)
 	assert_eq(strings.a, "")
 	assert_eq(strings.b, "po")

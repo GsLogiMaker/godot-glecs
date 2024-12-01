@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "godot_cpp/core/gdvirtual.gen.inc"
 #include "registerable_entity.h"
+#include "world.h"
 
 #include <flecs.h>
 #include <godot_cpp/classes/ref_counted.hpp>
@@ -50,6 +51,9 @@ namespace godot {
 		void _register_internal();
 
 		void build_data_from_variant(Variant, void* output);
+		static void build_data_from_members(Array, void*, ecs_entity_t, GFWorld*);
+		static const EcsComponent* get_component_ptr(GFWorld*, ecs_entity_t);
+		static const EcsStruct* get_struct_ptr(GFWorld*, ecs_entity_t);
 		void set_source_id(ecs_entity_t id);
 
 		static Ref<GFRegisterableEntity> new_internal();

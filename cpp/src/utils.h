@@ -94,6 +94,7 @@ namespace godot {
 		static Variant primitive_value_to_variant(const void*, ecs_primitive_kind_t);
 		static Variant::Type primitive_type_to_variant(ecs_primitive_kind_t);
 		static EntityResult variant_type_to_id(Variant::Type type);
+		static bool can_convert_type_to_primitive(Variant::Type type, ecs_primitive_kind_t primi);
 
 		static String into_pascal_case(String str);
 

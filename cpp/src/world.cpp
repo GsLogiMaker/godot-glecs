@@ -490,17 +490,7 @@ GFWorld::GFWorld() {
 	#undef DEFINE_GD_COMPONENT
 	#undef DEFINE_GD_COMPONENT_WITH_HOOKS
 
-	// Register modules from scripts
-	Engine* engine = Engine::get_singleton();
-	if (engine->has_singleton("_glecs_modules")) {
-		ecs_entity_t prev_scope = ecs_get_scope(raw());
-		ecs_set_scope(raw(), glecs);
-
-		Object* glecs_modules = engine->get_singleton("_glecs_modules");
-		glecs_modules->call("register_modules", this);
-
-		ecs_set_scope(raw(), prev_scope);
-	}
+	_register_modules_from_scripts(0);
 }
 
 GFWorld::~GFWorld() {
@@ -690,6 +680,12 @@ ecs_entity_t GFWorld::register_script_id(Ref<Script> script) {
 }
 
 Ref<GFRegisterableEntity> GFWorld::register_script_id_no_user_call(Ref<Script> script) {
+	if (*script == nullptr) {
+		ERR(nullptr,
+			"Could not register script\n",
+			"Script is null."
+		);
+	}
 	if (!godot::ClassDB::is_parent_class(
 		script->get_instance_base_type(),
 		GFRegisterableEntity::get_class_static()
@@ -751,6 +747,34 @@ Ref<GFRegisterableEntity> GFWorld::register_script_id_no_user_call(Ref<Script> s
 	return reg_ett;
 }
 
+void GFWorld::_register_modules_from_scripts(int depth=0) {
+	const auto MODULES = "_glecs_modules";
+	// Register modules from scripts
+	Engine* engine = Engine::get_singleton();
+	if (engine->has_singleton(MODULES)) {
+		if (depth != 0) {
+			UtilityFunctions::push_warning("Load modules from scripts was delayed.\n",
+				"	Found \"", MODULES, "\" after", depth, " iteration(s)."
+			);
+		}
+		ecs_entity_t prev_scope = ecs_get_scope(raw());
+		ecs_set_scope(raw(), glecs);
+
+		Object* glecs_modules = engine->get_singleton(MODULES);
+		glecs_modules->call("register_modules", this);
+
+		ecs_set_scope(raw(), prev_scope);
+	} else {
+		if (depth == 10) {
+			UtilityFunctions::push_warning("Failed to load modules from scripts.\n",
+				"	Could not find \"", MODULES, "\"."
+			);
+			return;
+		}
+		call_deferred("_register_modules_from_scripts", depth+1);
+	}
+}
+
 void GFWorld::start_rest_api() {
 	ecs_entity_t rest_id = ecs_lookup_path_w_sep(raw(), 0, "flecs.rest.Rest", ".", "", false);
 	EcsRest rest = (EcsRest)EcsRest();
@@ -762,6 +786,18 @@ ecs_entity_t GFWorld::variant_type_to_id(Variant::Type type) {
 		throw "No ID exists for VARIANT_MAX";
 	}
 	return GFWorld::glecs_meta_nil + type;
+}
+
+String GFWorld::id_to_text(ecs_entity_t id) {
+	if (ecs_id_is_pair(id)) {
+		return String("(")
+			+ id_to_text(ECS_PAIR_FIRST(id)) + ", "
+			+ id_to_text(ECS_PAIR_SECOND(id)) + ")"
+		;
+	}
+	return String(ecs_get_name(raw(), id))
+		+ "#" + String::num_int64(id)
+	;
 }
 
 Variant::Type GFWorld::id_to_variant_type(ecs_entity_t id) {
@@ -778,6 +814,19 @@ Variant::Type GFWorld::id_to_variant_type(ecs_entity_t id) {
 // ----------------------------------------------
 // --- Unexposed ---
 // ----------------------------------------------
+
+/// If id is a pair then returns the ID that is a component.
+/// Id id is not a pair, then just returns id.
+ecs_entity_t GFWorld::get_main_id(ecs_entity_t id) {
+	if (ECS_IS_PAIR(id)) {
+		ecs_entity_t first = ECS_PAIR_FIRST(id);
+		if (ecs_has_id(raw(), first, FLECS_IDEcsStructID_)) {
+			return first;
+		}
+		return ECS_PAIR_SECOND(id);
+	}
+	return id;
+}
 
 ecs_entity_t GFWorld::get_registered_id(Ref<Script> script) {
 	return registered_entity_ids.get(script, 0);
@@ -1061,6 +1110,8 @@ void GFWorld::_bind_methods() {
 	godot::ClassDB::bind_method(D_METHOD("pair", "first", "second"), &GFWorld::pair);
 	godot::ClassDB::bind_method(D_METHOD("pair_ids", "first", "second"), &GFWorld::pair_ids);
 	godot::ClassDB::bind_method(D_METHOD("progress", "delta"), &GFWorld::progress);
+
+	godot::ClassDB::bind_method(D_METHOD("_register_modules_from_scripts", "depth"), &GFWorld::_register_modules_from_scripts);
 }
 
 // ----------------------------------------------

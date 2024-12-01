@@ -15,7 +15,7 @@ func after_each():
 
 func test_rendering_texture():
 	var e:= GFEntity.spawn(world) \
-		.add_component(GFTexture2D, [TEXTURE]) \
+		.add_component(GFTexture2D, TEXTURE) \
 		.add_component(GFCanvasItem)
 
 	var draw_rect:= RenderingServer.debug_canvas_item_get_rect(

@@ -1,6 +1,7 @@
 
 #include "utils.h"
 #include "godot_cpp/core/defs.hpp"
+#include "godot_cpp/variant/utility_functions.hpp"
 #include "godot_cpp/variant/variant.hpp"
 #include "world.h"
 
@@ -159,6 +160,70 @@ void Utils::set_gd_struct_from_variant(
 	}
 }
 
+bool Utils::can_convert_type_to_primitive(Variant::Type type, ecs_primitive_kind_t primi) {
+	switch (type) {
+        case Variant::NIL:
+			return false;
+        case Variant::BOOL:
+			return primi == ecs_primitive_kind_t::EcsBool;
+        case Variant::INT: {
+			switch (primi) {
+				case EcsU8: case EcsU16: case EcsU32: case EcsU64:
+				case EcsI8: case EcsI16: case EcsI32: case EcsI64:
+					return true;
+				default:
+					return false;
+			}
+		}
+        case Variant::FLOAT: {
+			switch (primi) {
+				case EcsF32: case EcsF64:
+					return true;
+				default:
+					return false;
+        	}
+		}
+        case Variant::STRING:
+        case Variant::VECTOR2:
+        case Variant::VECTOR2I:
+        case Variant::RECT2:
+        case Variant::RECT2I:
+        case Variant::VECTOR3:
+        case Variant::VECTOR3I:
+        case Variant::TRANSFORM2D:
+        case Variant::VECTOR4:
+        case Variant::VECTOR4I:
+        case Variant::PLANE:
+        case Variant::QUATERNION:
+        case Variant::AABB:
+        case Variant::BASIS:
+        case Variant::TRANSFORM3D:
+        case Variant::PROJECTION:
+        case Variant::COLOR:
+        case Variant::STRING_NAME:
+        case Variant::NODE_PATH:
+        case Variant::RID:
+        case Variant::OBJECT:
+        case Variant::CALLABLE:
+        case Variant::SIGNAL:
+        case Variant::DICTIONARY:
+        case Variant::ARRAY:
+        case Variant::PACKED_BYTE_ARRAY:
+        case Variant::PACKED_INT32_ARRAY:
+        case Variant::PACKED_INT64_ARRAY:
+        case Variant::PACKED_FLOAT32_ARRAY:
+        case Variant::PACKED_FLOAT64_ARRAY:
+        case Variant::PACKED_STRING_ARRAY:
+        case Variant::PACKED_VECTOR2_ARRAY:
+        case Variant::PACKED_VECTOR3_ARRAY:
+        case Variant::PACKED_COLOR_ARRAY:
+        case Variant::PACKED_VECTOR4_ARRAY:
+        case Variant::VARIANT_MAX:
+			return false;
+	}
+	return false;
+}
+
 void Utils::set_primitive_from_variant(
 	const Variant value,
 	const ecs_primitive_kind_t primi_kind,
@@ -194,6 +259,13 @@ void Utils::set_type_from_variant(
 ) {
 	const EcsPrimitive* primi = ecs_get(world, type, EcsPrimitive);
 	if (primi != nullptr) {
+		if (!Utils::can_convert_type_to_primitive(value.get_type(), primi->kind)) {
+			// TODO: Display names of primitive and variant type, instead of numbers
+			ERR(/**/, "Set value failed.\n",
+				"Setting Flecs primitive type, ", primi->kind, ", to value of Godot type, ",
+				value.get_type(), ", is invalid."
+			);
+		}
 		set_primitive_from_variant(value, primi->kind, out);
 		return;
 	}

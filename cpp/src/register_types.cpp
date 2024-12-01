@@ -5,6 +5,8 @@
 #include "entity.h"
 #include "gdextension_interface.h"
 #include "godot_cpp/classes/engine.hpp"
+#include "godot_cpp/classes/resource_loader.hpp"
+#include "godot_cpp/variant/utility_functions.hpp"
 #include "module.h"
 #include "observer_builder.h"
 #include "pair.h"
@@ -20,40 +22,53 @@
 using namespace godot;
 
 void initialize_module(ModuleInitializationLevel p_level) {
-	if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {
-		GDExtensionsInterfaceEditorHelpLoadXmlFromUtf8CharsAndLen editor_help_load_xml_from_utf8_chars_and_len = (GDExtensionsInterfaceEditorHelpLoadXmlFromUtf8CharsAndLen)internal::gdextension_interface_get_proc_address("editor_help_load_xml_from_utf8_chars_and_len");
-		editor_help_load_xml_from_utf8_chars_and_len(_doc_data, _doc_data_size);
+	switch (p_level) {
+        case MODULE_INITIALIZATION_LEVEL_CORE:
+        case MODULE_INITIALIZATION_LEVEL_SERVERS:
+        case MODULE_INITIALIZATION_LEVEL_MAX:
+			break;
+        case MODULE_INITIALIZATION_LEVEL_SCENE:
+			godot::ClassDB::register_class<GFWorld>();
+
+			godot::ClassDB::register_abstract_class<GFEntity>();
+			godot::ClassDB::register_abstract_class<GFPair>();
+			godot::ClassDB::register_class<GFRegisterableEntity>();
+			godot::ClassDB::register_class<GFComponent>();
+			godot::ClassDB::register_class<GFModule>();
+
+			godot::ClassDB::register_abstract_class<GFComponentBuilder>();
+			godot::ClassDB::register_abstract_class<GFQuery>();
+			godot::ClassDB::register_abstract_class<GFQueryIterator>();
+
+			godot::ClassDB::register_abstract_class<GFQuerylikeBuilder>();
+			godot::ClassDB::register_abstract_class<GFObserverBuilder>();
+			godot::ClassDB::register_abstract_class<GFQueryBuilder>();
+			godot::ClassDB::register_abstract_class<GFSystemBuilder>();
+     	   	Engine::get_singleton()->register_singleton(GFWorld::SINGLETON_NAME, memnew(GFWorld));
+			break;
+        case MODULE_INITIALIZATION_LEVEL_EDITOR:
+			GDExtensionsInterfaceEditorHelpLoadXmlFromUtf8CharsAndLen
+				editor_help_load_xml_from_utf8_chars_and_len
+				= (GDExtensionsInterfaceEditorHelpLoadXmlFromUtf8CharsAndLen)
+				internal::gdextension_interface_get_proc_address(
+					"editor_help_load_xml_from_utf8_chars_and_len"
+				);
+			editor_help_load_xml_from_utf8_chars_and_len(_doc_data, _doc_data_size);
+			break;
 	}
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
-	}
-
-	godot::ClassDB::register_class<GFWorld>();
-
-	godot::ClassDB::register_abstract_class<GFEntity>();
-	godot::ClassDB::register_abstract_class<GFPair>();
-	godot::ClassDB::register_class<GFRegisterableEntity>();
-	godot::ClassDB::register_class<GFComponent>();
-	godot::ClassDB::register_class<GFModule>();
-
-	godot::ClassDB::register_abstract_class<GFComponentBuilder>();
-	godot::ClassDB::register_abstract_class<GFQuery>();
-	godot::ClassDB::register_abstract_class<GFQueryIterator>();
-
-	godot::ClassDB::register_abstract_class<GFQuerylikeBuilder>();
-	godot::ClassDB::register_abstract_class<GFObserverBuilder>();
-	godot::ClassDB::register_abstract_class<GFQueryBuilder>();
-	godot::ClassDB::register_abstract_class<GFSystemBuilder>();
-
-	Engine::get_singleton()->register_singleton(GFWorld::SINGLETON_NAME, memnew(GFWorld));
 }
 
 void uninitialize_module(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	switch (p_level) {
+        case MODULE_INITIALIZATION_LEVEL_CORE:
+        case MODULE_INITIALIZATION_LEVEL_SERVERS:
+        case MODULE_INITIALIZATION_LEVEL_EDITOR:
+        case MODULE_INITIALIZATION_LEVEL_MAX:
+          break;
+        case MODULE_INITIALIZATION_LEVEL_SCENE:
+     	   Engine::get_singleton()->unregister_singleton(GFWorld::SINGLETON_NAME);
+		   break;
 	}
-
-	Engine::get_singleton()->unregister_singleton(GFWorld::SINGLETON_NAME);
 }
 
 extern "C" {

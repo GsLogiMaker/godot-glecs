@@ -1,12 +1,12 @@
 
 extends GutTest
 
-var world:GFWorld
+var world:GFWorld = null
 
-func before_all():
+func before_each():
 	world = GFWorld.new()
 
-func after_all():
+func after_each():
 	world.free()
 
 #region Tests
@@ -49,7 +49,7 @@ func test_on_set_event():
 			)
 
 	var e:= GFEntity.spawn(world) \
-		.add_component(Ints, [2, 31]) \
+		.add_component(Ints, 2, 31) \
 		.set_name("WithInts")
 	var e2:= GFEntity.spawn(world) \
 		.set_name("WithoutInts")
@@ -58,7 +58,7 @@ func test_on_set_event():
 	var e4:= GFEntity.spawn(world) \
 		.set_name("WithoutInts")
 
-	e3.add_component(Ints, [99, 2])
+	e3.add_component(Ints, 99, 2)
 
 	assert_eq(data.i, 2 + 31 + 99 + 2)
 
@@ -89,7 +89,7 @@ func test_on_add_event_with_objects():
 	data.i = 0
 	var e2:= GFEntity.spawn(world) \
 		.set_name("WithTextures")
-	e2.add_component(Textures, [load("res://icon.png")])
+	e2.add_component(Textures, load("res://icon.png"))
 	assert_eq(data.i, 1)
 	assert_eq(e2.get_component(Textures).a, load("res://icon.png"))
 

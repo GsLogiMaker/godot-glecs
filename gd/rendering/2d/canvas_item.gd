@@ -9,6 +9,22 @@ func _build(b: GFComponentBuilder) -> void:
 	b.add_member("rid", TYPE_RID)
 	
 
+static func get_main_viewport_rid() -> RID:
+	return Engine.get_main_loop() \
+		.current_scene \
+		.get_viewport() \
+		.get_viewport_rid()
+
+
+static func get_main_canvas() -> RID:
+	return Engine.get_main_loop() \
+		.current_scene \
+		.get_viewport() \
+		.get_world_2d() \
+		.get_canvas()
+		
+
+
 ## Sets the parent canvas item of this canvas item by its [RID].
 func set_parent_canvas_item(rid:RID) -> void:
 	RenderingServer.canvas_item_set_parent(

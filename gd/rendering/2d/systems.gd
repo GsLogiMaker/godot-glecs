@@ -11,9 +11,9 @@ func _register(w:GFWorld):
 		.for_each(func(item:GFCanvasItem):
 			item.set_rid(RenderingServer.canvas_item_create())
 			# Set parent to root
-			var root_canvas_item:CanvasItem =  Engine.get_main_loop() \
-				.current_scene
-			item.set_parent_canvas_item(root_canvas_item.get_canvas_item())
+			item.set_parent_canvas_item(
+				GFCanvasItem.get_main_canvas()
+				)
 			)
 
 	# On set GFCanvasItem
@@ -21,7 +21,7 @@ func _register(w:GFWorld):
 		.with(GFCanvasItem) \
 		.for_each(func(item:GFCanvasItem):
 			item.set_parent_canvas_item(
-				Engine.get_main_loop().current_scene.get_canvas_item()
+				GFCanvasItem.get_main_canvas()
 				)
 			)
 

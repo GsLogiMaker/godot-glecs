@@ -45,9 +45,11 @@ namespace godot {
 		ecs_entity_t register_script_id(Ref<Script>);
 		ecs_entity_t register_new_script_id(Ref<Script> script);
 		Ref<GFRegisterableEntity> register_script_id_no_user_call(Ref<Script> script);
+		void _register_modules_from_scripts(int);
 
 		void start_rest_api();
 		static ecs_entity_t variant_type_to_id(Variant::Type);
+		String id_to_text(ecs_entity_t);
 		static Variant::Type id_to_variant_type(ecs_entity_t);
 
 		// **************************************
@@ -100,6 +102,7 @@ namespace godot {
 		static ecs_entity_t glecs_meta_packed_color_array;
 		static ecs_entity_t glecs_meta_packed_vector4_array;
 
+		ecs_entity_t get_main_id(ecs_entity_t);
 		/// Returns the ID which was registered with the given Script.
 		/// Returns 0 if the entity has no registered script.
 		ecs_entity_t get_registered_id(Ref<Script> script);

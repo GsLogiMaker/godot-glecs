@@ -27,7 +27,7 @@
 			"label": "godot-extension: Doctool Dump Documentation Files",
 			"detail": "Dumps GDExtension documentation xml files",
 			"type": "shell",
-			"command": "${config:godotTools.editorPath.godot4} --doctool ./cpp/src/ --gdextension-docs --editor --headless --quit",
+			"command": "cd ../../ && ${config:godotTools.editorPath.godot4} --doctool ./addons/glecs/cpp/src --gdextension-docs --editor --headless --quit",
 			"problemMatcher": []
 		}
 	]

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="GFEntity" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+<class name="GFEntity" inherits="RefCounted"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
 		A reference to an entity from a [GFWorld].
 	</brief_description>
@@ -9,7 +10,7 @@
 		<link title="More on Flecs Entities">https://www.flecs.dev/flecs/md_docs_2EntitiesComponents.html</link>
 	</tutorials>
 	<methods>
-		<method name="add_component">
+		<method name="add_component" qualifiers="const vararg">
 			<return type="GFEntity" />
 			<param index="0" name="component" type="Variant" />
 			<description>
@@ -17,9 +18,26 @@
 				The component's type ID is coerced from a [Variant]. To learn more about [Variant] coercion see [method GFWorld.coerce_id].
 				[codeblock]
 				var entity:= GFEntity.spawn()
-				entity.add_component("glecs/meta/Array")
-				entity.get_component("glecs/meta/Array") != null # true
+				entity.add_component(GFPosition2D, Vector2(10, 10))
+				entity.get_component(GFPosition2D).get_vec() == Vector2(10, 10) # true
 				[/codeblock]
+				This method returns [code]self[/code] for chaining.
+			</description>
+		</method>
+		<method name="add_pair" qualifiers="const vararg">
+			<return type="GFEntity" />
+			<param index="0" name="first" type="Variant" />
+			<param index="1" name="second" type="Variant" />
+			<description>
+				Adds component data to the pair of [param first] and [param second] to
+				this entity.
+				The component's type ID is coerced from a [Variant]. To learn more about [Variant] coercion see [method GFWorld.coerce_id].
+				[codeblock]
+				var entity:= GFEntity.spawn()
+				entity.add_pair(GFPosition2D, Vector2(10, 10))
+				entity.get_pair(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				[/codeblock]
+				This method returns [code]self[/code] for chaining.
 			</description>
 		</method>
 		<method name="from" qualifiers="static">
@@ -81,6 +99,21 @@
 				[/codeblock]
 			</description>
 		</method>
+		<method name="get_pair">
+			<return type="GFComponent" />
+			<param index="0" name="first" type="Variant" />
+			<param index="1" name="second" type="Variant" />
+			<description>
+				Returns a reference to this entity's component's data in the pair
+				of [param first] and [param second].
+				Returns [code]null[/code] if the entity does not have the [param component] attached or if [param component] is not a component. The component is identified by an ID coerced from a [Variant]. To learn more about [Variant] coercion see [method GFWorld.coerce_id].
+				[codeblock]
+				var entity:= GFEntity.spawn()
+				entity.add_component("glecs/meta/Array")
+				entity.get_component("glecs/meta/Array") != null # true
+				[/codeblock]
+			</description>
+		</method>
 		<method name="get_world">
 			<return type="GFWorld" />
 			<description>
@@ -135,8 +168,30 @@
 				[codeblock]
 				var Eats:= GFEntity.spawn()
 				var Grass:= GFEntity.spawn()
-				var EatsGrass_id:int = Eats.pair(Grass.get_id())
+				var EatsGrass_id:int = Eats.pair_id(Grass.get_id())
 				[/codeblock]
+			</description>
+		</method>
+		<method name="set_component" qualifiers="const vararg">
+			<return type="GFEntity" />
+			<param index="0" name="component" type="Variant" />
+			<description>
+				Sets component data of type [param component] in this entity.
+				The component's type ID is coerced from a [Variant]. To learn more about [Variant] coercion see [method GFWorld.coerce_id].
+				[codeblock]
+				var entity:= GFEntity.spawn()
+				entity.add_component(GFPosition2D)
+				entity.set_component(GFPosition2D, Vector2(10, 10))
+				entity.get_component(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				[/codeblock]
+				If the component is not added yet, then this method will add
+				it automaticly.
+				[codeblock]
+				var entity:= GFEntity.spawn()
+				entity.set_component(GFPosition2D, Vector2(10, 10))
+				entity.get_component(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				[/codeblock]
+				This method returns [code]self[/code] for chaining.
 			</description>
 		</method>
 		<method name="set_name">
@@ -149,6 +204,25 @@
 				entity.set_name("Entity")
 				entity.get_name() == "Entity" # true
 				[/codeblock]
+				This method returns [code]self[/code] for chaining.
+			</description>
+		</method>
+		<method name="set_pair" qualifiers="const vararg">
+			<return type="GFEntity" />
+			<param index="0" name="first" type="Variant" />
+			<param index="1" name="second" type="Variant" />
+			<description>
+				Sets component data is this entity from the pair of [param first] and
+				[param second].
+				The component's type ID is coerced from a [Variant]. To learn more about [Variant] coercion see [method GFWorld.coerce_id].
+				[codeblock]
+				var start:= GFEntity.spawn().set_name("Start")
+				var entity:= GFEntity.spawn()
+				# Pair will be added if it is not already.
+				entity.set_pair(start, GFPosition2D, Vector2(10, 10))
+				entity.get_pair(start, GFPosition2D).get_vec() == Vector2(10, 10) # true
+				[/codeblock]
+				This method returns [code]self[/code] for chaining.
 			</description>
 		</method>
 		<method name="spawn" qualifiers="static">

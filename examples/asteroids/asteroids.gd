@@ -1,7 +1,6 @@
 
 extends Node2D
 
-
 var world:= GFWorld.new()
 
 var texture:= load("res://icon.png")
@@ -10,10 +9,10 @@ var texture:= load("res://icon.png")
 func _ready() -> void:
 	GFEntity.spawn(world) \
 		.set_name("Test") \
-		.add_component(GFTexture2D, [texture]) \
+		.add_component(GFTexture2D, texture) \
 		.add_component(GFCanvasItem) \
 		.add_component(GFPosition2D)
-	
+
 	world.start_rest_api()
 
 
