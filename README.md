@@ -79,7 +79,7 @@ software you will need to build Glecs from source.
 Clone the development branch. If you plan to use Glecs in a Godot project
 clone it to `res://addons`.
 ```bash
-git clone https://github.com/GsLogiMaker/godot-glecs.git ./glecs/ -b dev --recursive-submodules
+git clone https://github.com/GsLogiMaker/godot-glecs.git ./glecs/ -b dev --recursive
 ```
 Build Glecs's source code.
 ```bash
