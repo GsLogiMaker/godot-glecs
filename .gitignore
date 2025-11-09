@@ -14,3 +14,6 @@ cpp/src/doc_data.gen.h
 # Windows
 *.obj
 *.obj.import
+
+# Godot
+*uid

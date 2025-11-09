@@ -7,11 +7,10 @@ func _register(w:GFWorld):
 	var OnAdd:= w.lookup("/root/flecs/core/OnAdd")
 	var OnSet:= w.lookup("/root/flecs/core/OnSet")
 	var OnRemove:= w.lookup("/root/flecs/core/OnRemove")
-	
+
 	#region GFCanvasItem
 	# Construct GFCanvasItem
-	GFObserverBuilder.new() \
-		.set_name("construct_canvas_item") \
+	GFObserverBuilder.new().set_name("construct_canvas_item") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
 		.for_each(func(item:GFCanvasItem):
@@ -22,8 +21,7 @@ func _register(w:GFWorld):
 				)
 			)
 
-	GFObserverBuilder.new() \
-		.set_name("update_canvas_item_on_set") \
+	GFObserverBuilder.new().set_name("update_canvas_item_on_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem) \
 		.for_each(func(item:GFCanvasItem):
@@ -33,16 +31,14 @@ func _register(w:GFWorld):
 			queue_redraw(item.get_source_entity())
 			)
 
-	GFObserverBuilder.new() \
-		.set_name("destruct_canvas_item") \
+	GFObserverBuilder.new().set_name("destruct_canvas_item") \
 		.set_events(OnRemove) \
 		.with(GFCanvasItem) \
 		.for_each(func(item:GFCanvasItem):
 			RenderingServer.free_rid(item.get_rid())
 			)
-			
-	GFObserverBuilder.new() \
-		.set_name("update_canvas_item_transform") \
+
+	GFObserverBuilder.new().set_name("update_canvas_item_transform") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
 		.with_maybe(GFPosition2D) \
@@ -52,18 +48,16 @@ func _register(w:GFWorld):
 	#endregion
 
 	#region GFTexture2D
-	
-	GFObserverBuilder.new() \
-		.set_name("texture_2d_trigger_redraw") \
+
+	GFObserverBuilder.new().set_name("texture_2d_trigger_redraw") \
 		.set_events(OnAdd, OnSet) \
 		.with(GFCanvasItem) \
 		.with(GFTexture2D) \
 		.for_each(func(item:GFCanvasItem, sprite:GFTexture2D):
 			queue_redraw(item.get_source_entity())
 			)
-	
-	GFObserverBuilder.new() \
-		.set_name("draw_texture_rect") \
+
+	GFObserverBuilder.new().set_name("draw_texture_rect") \
 		.set_events(GFOnDraw) \
 		.with(GFCanvasItem) \
 		.with(GFTexture2D) \
@@ -71,20 +65,19 @@ func _register(w:GFWorld):
 			var texture:= sprite.get_texture()
 			if not texture:
 				return
-			
+
 			RenderingServer.canvas_item_add_texture_rect(
 				item.get_rid(),
 				Rect2(-texture.get_size() / 2, texture.get_size()),
 				texture,
 				)
 			)
-	
+
 	#endregion
 
 	#region GFDrawRect2D
-	
-	GFObserverBuilder.new() \
-		.set_name("draw_rect_2d_trigger_redraw") \
+
+	GFObserverBuilder.new().set_name("draw_rect_2d_trigger_redraw") \
 		.set_events(OnAdd, OnSet) \
 		.with(GFCanvasItem) \
 		.with(GFDrawRect2D) \
@@ -97,9 +90,8 @@ func _register(w:GFWorld):
 			):
 			queue_redraw(item.get_source_entity())
 			)
-	
-	GFObserverBuilder.new() \
-		.set_name("trigger_redraw_on_set_draw_rect_size") \
+
+	GFObserverBuilder.new().set_name("trigger_redraw_on_set_draw_rect_size") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
 		.with(GFSize2D, GFDrawRect2D) \
@@ -109,9 +101,8 @@ func _register(w:GFWorld):
 			):
 			queue_redraw(item.get_source_entity())
 			)
-	
-	GFObserverBuilder.new() \
-		.set_name("draw_rect") \
+
+	GFObserverBuilder.new().set_name("draw_rect") \
 		.set_events(GFOnDraw) \
 		.with(GFCanvasItem) \
 		.with(GFDrawRect2D) \
@@ -138,14 +129,14 @@ func _register(w:GFWorld):
 				Color.RED
 				)
 			)
-		
+
 	#endregion
 
 static func queue_redraw(entity:GFEntity) -> void:
 	var item:= entity.get(GFCanvasItem)
 	if not item:
 		return
-	
+
 	RenderingServer.canvas_item_clear(item.get_rid())
 	GFEntity.from(GFOnDraw, entity.get_world()) \
 		.emit(entity)
