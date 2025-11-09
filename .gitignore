@@ -16,4 +16,4 @@ cpp/src/doc_data.gen.h
 *.obj.import
 
 # Godot
-*uid
+*.uid
