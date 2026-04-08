@@ -28,6 +28,7 @@
 	Ref<Self> io_inout()	{ return GFQuerylikeBuilder::io_inout(); }	\
 	Ref<Self> io_none()	{ return GFQuerylikeBuilder::io_none(); }	\
 	Ref<Self> io_out()	{ return GFQuerylikeBuilder::io_out(); }	\
+	Ref<Self> src(const Variant v0)	{ return GFQuerylikeBuilder::src(v0); }	\
 	Ref<Self> from(const Variant v0)	{ return GFQuerylikeBuilder::from(v0); }	\
 ;
 
@@ -46,6 +47,7 @@
 	godot::ClassDB::bind_method(D_METHOD("io_inout"), &Self::io_inout);	\
 	godot::ClassDB::bind_method(D_METHOD("io_none"), &Self::io_none);	\
 	godot::ClassDB::bind_method(D_METHOD("io_out"), &Self::io_out);	\
+	godot::ClassDB::bind_method(D_METHOD("src", "source"), &Self::src);	\
 	godot::ClassDB::bind_method(D_METHOD("from", "entity"), &Self::from);	\
 ;
 
@@ -112,6 +114,7 @@ namespace godot {
 		Ref<GFQuerylikeBuilder> io_inout();
 		Ref<GFQuerylikeBuilder> io_none();
 		Ref<GFQuerylikeBuilder> io_out();
+		Ref<GFQuerylikeBuilder> src(const Variant source);
 		Ref<GFQuerylikeBuilder> with(const Variant, const Variant);
 		Ref<GFQuerylikeBuilder> with_maybe(const Variant, const Variant);
 		Ref<GFQuerylikeBuilder> without(const Variant, const Variant);

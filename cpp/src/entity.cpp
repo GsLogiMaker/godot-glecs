@@ -206,9 +206,7 @@ bool GFEntity::_set(StringName property, Variant value) {
 
 Ref<GFEntity> GFEntity::add_child(const Variant entity) {
 	ecs_entity_t id = get_world()->coerce_id(entity);
-	if (!get_world()->id_set_parent(id, get_id())) {
-		return nullptr;
-	}
+	get_world()->id_set_parent(id, get_id());
 	return Ref(this);
 }
 

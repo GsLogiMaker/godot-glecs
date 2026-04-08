@@ -80,6 +80,24 @@ Ref<GFQuerylikeBuilder> GFQuerylikeBuilder::io_out() {
 	return Ref(this);
 }
 
+Ref<GFQuerylikeBuilder> GFQuerylikeBuilder::src(const Variant source) {
+	CHECK_HAS_A_TERM(Ref(this),
+		"Failed to set source in term\n"
+	);
+
+	GFWorld* w = get_world();
+	ecs_term_t* term = &query_desc.terms[get_term_count()-1];
+
+	handle_id_or_variable(
+		w,
+		source,
+		&term->first.id,
+		&source_names[get_term_count()-1]
+	);
+
+	return Ref(this);
+}
+
 Ref<GFQuerylikeBuilder> GFQuerylikeBuilder::with(const Variant term_v, const Variant second) {
 	return _add_term(term_v, second, ecs_oper_kind_t::EcsAnd);
 }
