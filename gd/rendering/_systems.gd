@@ -7,6 +7,8 @@ func _register(w:GFWorld):
 	var OnAdd:= w.lookup("/root/flecs/core/OnAdd")
 	var OnSet:= w.lookup("/root/flecs/core/OnSet")
 	var OnRemove:= w.lookup("/root/flecs/core/OnRemove")
+	var ChildOf:= w.lookup("/root/flecs/core/ChildOf")
+	var Any:= w.lookup("/root/flecs/core/*")
 
 	#region GFCanvasItem
 	# Construct GFCanvasItem
@@ -20,6 +22,26 @@ func _register(w:GFWorld):
 				GFCanvasItem.get_main_canvas()
 				)
 			)
+	
+	GFObserverBuilder.new().set_name("construct_canvas_item") \
+		.set_events(OnAdd) \
+		.with(GFCanvasItem).io_filter() \
+		.with(ChildOf, "$par") \
+		.with(GFCanvasItem).src("$par") \
+		.for_each(func(
+			item:GFCanvasItem,
+			_pair:GFPair,
+			par_item:GFCanvasItem,
+		):
+			item.set_rid(RenderingServer.canvas_item_create())
+			
+			# Set parent to root
+			var parent:= par_item.get_rid() \
+				if par_item \
+				else GFCanvasItem.get_main_canvas()
+			item.set_parent_canvas_item(parent)
+			)
+			
 
 	GFObserverBuilder.new().set_name("update_canvas_item_on_set") \
 		.set_events(OnSet) \

@@ -13,6 +13,12 @@ func _ready() -> void:
 	e.add(GFRotation2D)
 	e.set(GFRect2D.size, Vector2(100, 22))
 
+	var child:= GFEntity.new().set_name("Child") \
+		.set_parent(e) \
+		.set(GFPosition2D, Vector2(100, 10)) \
+		.add(GFRect2D)
+	child.set(GFPosition2D, Vector2(100, 10))
+
 	GFEntity.from(GFOnDraw, e.get_world()).emit(e)
 
 	GFWorld.get_default_world().start_rest_api()
@@ -20,7 +26,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	GFWorld.get_default_world().progress(0)
-	
+
 	var rot_c:GFRotation2D = e.get(GFRotation2D)
 	rot_c.set_angle(rot_c.get_angle() + (delta * Input.get_axis("ui_left", "ui_right")))
 
