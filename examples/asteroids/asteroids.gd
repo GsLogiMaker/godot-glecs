@@ -9,13 +9,9 @@ var e:GFEntity
 func _ready() -> void:
 	e = GFEntity.new()
 	e.set_name("Test")
-	e.add(GFCanvasItem)
-	#e.add(GFTexture2D, texture)
-	e.add(GFPosition2D, Vector2(0, 0))
-	e.add(GFDrawRect2D)
-	e.add(GFPosition2D)
+	e.add(GFRect2D)
 	e.add(GFRotation2D)
-	e.set_pair(GFSize2D, GFDrawRect2D, Vector2(100, 22))
+	e.set(GFRect2D.size, Vector2(100, 22))
 
 	GFEntity.from(GFOnDraw, e.get_world()).emit(e)
 
@@ -23,10 +19,15 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	GFWorld.get_default_world().progress(0)
+	
 	var rot_c:GFRotation2D = e.get(GFRotation2D)
 	rot_c.set_angle(rot_c.get_angle() + (delta * Input.get_axis("ui_left", "ui_right")))
-	
+
 	var v_axis:= Input.get_axis("ui_up", "ui_down")
 	if v_axis:
-		var size_c:GFSize2D= e.get(GFSize2D, GFDrawRect2D)
+		var size_c:GFRect2D.size = e.get(GFRect2D.size)
 		size_c.set_y(size_c.get_y() - (100 * delta * v_axis))
+
+	if Input.is_action_just_pressed("ui_accept"):
+		e.set(GFRect2D.color, Color(randf(), randf(), randf()))

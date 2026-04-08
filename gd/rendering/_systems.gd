@@ -75,28 +75,18 @@ func _register(w:GFWorld):
 
 	#endregion
 
-	#region GFDrawRect2D
+	#region GFRect2D
 
-	GFObserverBuilder.new().set_name("draw_rect_2d_trigger_redraw") \
-		.set_events(OnAdd, OnSet) \
-		.with(GFCanvasItem) \
-		.with(GFDrawRect2D) \
-		.with_maybe(GFPosition2D, GFDrawRect2D) \
-		.with_maybe(GFSize2D, GFDrawRect2D) \
-		.for_each(func(
-			item:GFCanvasItem,
-			_position_gf:GFPosition2D,
-			_size_gf:GFSize2D,
-			):
-			queue_redraw(item.get_source_entity())
-			)
-
-	GFObserverBuilder.new().set_name("trigger_redraw_on_set_draw_rect_size") \
+	GFObserverBuilder.new().set_name("trigger_rect_redraw") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
-		.with(GFSize2D, GFDrawRect2D) \
+		.with(GFRect2D).io_filter() \
+		.with(GFPosition2D, GFRect2D) \
+			.or_with(GFRect2D.size) \
+			.or_with(GFRect2D.color) \
 		.for_each(func(
 			item:GFCanvasItem,
+			_rect,
 			_value,
 			):
 			queue_redraw(item.get_source_entity())
@@ -105,28 +95,30 @@ func _register(w:GFWorld):
 	GFObserverBuilder.new().set_name("draw_rect") \
 		.set_events(GFOnDraw) \
 		.with(GFCanvasItem) \
-		.with(GFDrawRect2D) \
-		.with_maybe(GFPosition2D, GFDrawRect2D) \
-		.with_maybe(GFSize2D, GFDrawRect2D) \
+		.with(GFRect2D) \
+		.with_maybe(GFPosition2D, GFRect2D) \
+		.with_maybe(GFRect2D.color) \
+		.with_maybe(GFRect2D.size) \
 		.for_each(func(
 			item:GFCanvasItem,
-			rect_c:GFDrawRect2D,
+			rect_c:GFRect2D,
 			position_gf:GFPosition2D,
-			size_gf:GFSize2D,
+			color_gf:GFRect2D.color,
+			size_gf:GFRect2D.size,
 			):
-			#var size:= Vector2(32, 32)
-			#var pos:= -size / Vector2(2, 2)
-			prints(size_gf)
+			var color = color_gf.getm("color") \
+				if color_gf \
+				else Color.WHITE
 			var size = size_gf.get_size() \
 				if size_gf \
-				else Vector2(32, 32)
+				else Vector2(10, 10)
 			var pos = position_gf.get_vec() \
 				if position_gf \
 				else -size / Vector2(2, 2)
 			RenderingServer.canvas_item_add_rect(
 				item.get_rid(),
 				Rect2(pos, size),
-				Color.RED
+				color,
 				)
 			)
 
