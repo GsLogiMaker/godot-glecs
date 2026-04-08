@@ -1372,10 +1372,10 @@ bool GFWorld::id_set_parent(ecs_entity_t id, ecs_entity_t parent) const {
 
 	// TODO: Handle name conflicts rather than throw error
 	String new_name = String();
-	if (id_has_child(parent, ecs_get_name(raw(), id))) {
+	if (ecs_has_id(raw(), id, EcsName) && id_has_child(parent, ecs_get_name(raw(), id))) {
 		// Entity needs new name in parent
 		new_name = entity_unique_name(parent, ecs_get_name(raw(), id));
-		ecs_set_name(raw(), id, nullptr); // Remove name till added to parent
+		ecs_remove_id(raw(), id, EcsName);
 	}
 
 	ecs_add_id(raw(), id, ecs_childof(parent));
