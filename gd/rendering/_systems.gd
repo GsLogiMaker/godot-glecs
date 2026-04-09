@@ -11,7 +11,7 @@ func _register(w:GFWorld):
 	var OnSet:= w.lookup("/root/flecs/core/OnSet")
 
 	#region GFCanvasItem
-	# Construct GFCanvasItem
+
 	GFObserverBuilder.new().set_name("canvas_item_add") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
@@ -41,7 +41,7 @@ func _register(w:GFWorld):
 		.for_each(func(item:GFCanvasItem):
 			RenderingServer.free_rid(item.get_rid())
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_material_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem) \
@@ -107,7 +107,7 @@ func _register(w:GFWorld):
 		.for_each(func(item:GFCanvasItem, hidden):
 			item.set_visible(true)
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_light_mask_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -128,7 +128,7 @@ func _register(w:GFWorld):
 				1,
 				)
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_modulate_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -149,7 +149,7 @@ func _register(w:GFWorld):
 				Color.WHITE,
 				)
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_self_modulate_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -170,7 +170,28 @@ func _register(w:GFWorld):
 				Color.WHITE,
 				)
 			)
-	
+
+	GFObserverBuilder.new().set_name("canvas_item_show_behind_parent_add") \
+		.set_events(OnAdd) \
+		.with(GFCanvasItem) \
+		.with(GFCanvasItem.show_behind_parent) \
+		.for_each(func(item:GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_draw_behind_parent(
+				item.get_rid(),
+				true,
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_show_behind_parent_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.show_behind_parent) \
+		.for_each(func(item:GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_draw_behind_parent(
+				item.get_rid(),
+				false,
+				)
+			)
+
 	GFObserverBuilder.new().set_name("canvas_item_transform_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -178,7 +199,7 @@ func _register(w:GFWorld):
 		.with_maybe(GFRotation2D) \
 		.with_maybe(GFScale2D) \
 		.for_each(update_transform_c)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_texture_filter_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -199,7 +220,7 @@ func _register(w:GFWorld):
 				0,
 				)
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_texture_repeat_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -220,7 +241,7 @@ func _register(w:GFWorld):
 				0,
 				)
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_use_parent_material_add") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
@@ -241,7 +262,7 @@ func _register(w:GFWorld):
 				false,
 				)
 			)
-	
+
 	GFObserverBuilder.new().set_name("canvas_item_visibility_layer_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
@@ -293,36 +314,21 @@ func _register(w:GFWorld):
 
 	#endregion
 
-	#region GFRect2D
+	#region GFColorRect
 
-	GFObserverBuilder.new().set_name("trigger_rect_redraw") \
-		.set_events(OnSet) \
-		.with(GFCanvasItem).io_filter() \
-		.with(GFRect2D).io_filter() \
-		.with(GFPosition2D, GFRect2D) \
-			.or_with(GFRect2D.size) \
-			.or_with(GFRect2D.color) \
-		.for_each(func(
-			item:GFCanvasItem,
-			_rect,
-			_value,
-			):
-			queue_redraw(item.get_source_entity())
-			)
-
-	GFObserverBuilder.new().set_name("draw_rect") \
+	GFObserverBuilder.new().set_name("color_rect_draw") \
 		.set_events(GFOnDraw) \
 		.with(GFCanvasItem) \
-		.with(GFRect2D) \
-		.with_maybe(GFPosition2D, GFRect2D) \
-		.with_maybe(GFRect2D.color) \
-		.with_maybe(GFRect2D.size) \
+		.with(GFColorRect) \
+		.with_maybe(GFPosition2D, GFColorRect) \
+		.with_maybe(GFColorRect.color) \
+		.with_maybe(GFColorRect.size) \
 		.for_each(func(
 			item:GFCanvasItem,
-			rect_c:GFRect2D,
+			rect_c:GFColorRect,
 			position_gf:GFPosition2D,
-			color_gf:GFRect2D.color,
-			size_gf:GFRect2D.size,
+			color_gf:GFColorRect.color,
+			size_gf:GFColorRect.size,
 			):
 			var color = color_gf.getm("color") \
 				if color_gf \
@@ -338,6 +344,21 @@ func _register(w:GFWorld):
 				Rect2(pos, size),
 				color,
 				)
+			)
+
+	GFObserverBuilder.new().set_name("color_rect_position_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFColorRect).io_filter() \
+		.with(GFPosition2D, GFColorRect) \
+			.or_with(GFColorRect.size) \
+			.or_with(GFColorRect.color) \
+		.for_each(func(
+			item:GFCanvasItem,
+			_rect,
+			_value,
+			):
+			queue_redraw(item.get_source_entity())
 			)
 
 	#endregion

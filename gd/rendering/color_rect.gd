@@ -1,5 +1,5 @@
 
-class_name GFRect2D extends GFTag
+class_name GFColorRect extends GFTag
 
 func _register(world:GFWorld) -> void:
 	add_pair("/root/flecs/core/With", GFCanvasItem)

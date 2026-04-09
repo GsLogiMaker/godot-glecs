@@ -62,6 +62,7 @@ class light_mask extends GFComponent: func _build(b:GFComponentBuilder) -> void:
 class material extends GFMaterial: pass
 class modulate extends GFColor: pass
 class self_modulate extends modulate: pass
+class show_behind_parent extends GFTag: pass
 class texture_filter extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
 	.add_member("value", TYPE_INT)
 class texture_repeat extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
@@ -69,3 +70,7 @@ class texture_repeat extends GFComponent: func _build(b:GFComponentBuilder) -> v
 class use_parent_material extends GFTag: pass
 class visibility_layer extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
 	.add_member("layer", TYPE_INT)
+class y_sort_enabled extends GFTag: pass
+class z_as_relative extends GFTag: pass
+class z_index extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
+	.add_member("index", TYPE_INT)
