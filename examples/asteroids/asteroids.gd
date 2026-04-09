@@ -13,6 +13,7 @@ func _ready() -> void:
 	e.add(GFCanvasItem)
 	e.add(GFColorRect)
 	e.add(GFRotation2D)
+	e.add(GFSkew2D)
 	e.set(GFScale2D, Vector2.ONE)
 	e.set(GFCanvasItem.material, $ColorRect.material)
 	e.set(GFColorRect.size, Vector2(100, 22))
@@ -63,6 +64,14 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept"):
 		e.set(GFColorRect.color, Color(randf(), randf(), randf()))
 		c.set(GFColorRect.color, Color(randf(), randf(), randf()))
+	
+	var skew_c:= e.get(GFSkew2D)
+	prints(Input.is_key_pressed(KEY_6), int(Input.is_key_pressed(KEY_6)))
+	skew_c.set_skew(
+		skew_c.get_skew()
+		+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
+		* delta
+		)
 
 func _input(event: InputEvent) -> void:
 	if Input.is_key_pressed(KEY_1):
@@ -79,3 +88,4 @@ func _input(event: InputEvent) -> void:
 			e.remove(GFCanvasItem.self_modulate)
 		else:
 			e.add(GFCanvasItem.self_modulate)
+	

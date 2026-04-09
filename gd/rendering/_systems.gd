@@ -197,8 +197,24 @@ func _register(w:GFWorld):
 		.with(GFCanvasItem).io_filter() \
 		.with_maybe(GFPosition2D) \
 		.with_maybe(GFRotation2D) \
+		.with_maybe(GFSkew2D) \
 		.with_maybe(GFScale2D) \
-		.for_each(update_transform_c)
+		.for_each(func(
+			item_c:GFCanvasItem,
+			pos_c:GFPosition2D,
+			rot_c:GFRotation2D,
+			skew_c:GFSkew2D,
+			scale_c:GFScale2D,
+			) -> void:
+			var loc:Vector2 = pos_c.get_vec() if pos_c else Vector2()
+			var angle:float = rot_c.get_angle() if rot_c else 0.0
+			var skew:float = skew_c.get_skew() if skew_c else 0
+			var size:Vector2 = scale_c.get_scale() if scale_c else Vector2.ONE
+			RenderingServer.canvas_item_set_transform(
+				item_c.get_rid(),
+				Transform2D(angle, size, skew, loc),
+				)
+			)
 
 	GFObserverBuilder.new().set_name("canvas_item_texture_filter_set") \
 		.set_events(OnSet) \
@@ -371,17 +387,3 @@ static func queue_redraw(entity:GFEntity) -> void:
 	RenderingServer.canvas_item_clear(item.get_rid())
 	GFEntity.from(GFOnDraw, entity.get_world()) \
 		.emit(entity)
-
-static func update_transform_c(
-	item:GFCanvasItem,
-	pos:GFPosition2D,
-	rot:GFRotation2D,
-	scale:GFScale2D,
-) -> void:
-	var loc:Vector2 = pos.get_vec() if pos else Vector2()
-	var angle:float = rot.get_angle() if rot else 0.0
-	var size:Vector2 = scale.get_scale() if scale else Vector2.ONE
-	RenderingServer.canvas_item_set_transform(
-		item.get_rid(),
-		Transform2D(angle, size, 0, loc)
-		)
