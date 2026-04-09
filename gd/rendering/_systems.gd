@@ -4,11 +4,11 @@
 extends GFModule
 
 func _register(w:GFWorld):
-	var OnAdd:= w.lookup("/root/flecs/core/OnAdd")
-	var OnSet:= w.lookup("/root/flecs/core/OnSet")
-	var OnRemove:= w.lookup("/root/flecs/core/OnRemove")
-	var ChildOf:= w.lookup("/root/flecs/core/ChildOf")
 	var Any:= w.lookup("/root/flecs/core/*")
+	var ChildOf:= w.lookup("/root/flecs/core/ChildOf")
+	var OnAdd:= w.lookup("/root/flecs/core/OnAdd")
+	var OnRemove:= w.lookup("/root/flecs/core/OnRemove")
+	var OnSet:= w.lookup("/root/flecs/core/OnSet")
 
 	#region GFCanvasItem
 	# Construct GFCanvasItem
@@ -17,39 +17,59 @@ func _register(w:GFWorld):
 		.with(GFCanvasItem) \
 		.for_each(func(item:GFCanvasItem):
 			item.set_rid(RenderingServer.canvas_item_create())
-			# Set parent to root
-			item.set_parent_canvas_item(
-				GFCanvasItem.get_main_canvas()
+			)
+
+	GFObserverBuilder.new().set_name("update_canvas_group_mode_clip") \
+		.set_events(OnAdd) \
+		.with(GFCanvasItem) \
+		.with(GFCanvasItem.clip_children) \
+		.for_each(func(item:GFCanvasItem, clip_children):
+			RenderingServer.canvas_item_set_canvas_group_mode(
+				item.get_rid(),
+				RenderingServer.CanvasGroupMode.CANVAS_GROUP_MODE_CLIP_ONLY,
 				)
 			)
-	
-	GFObserverBuilder.new().set_name("construct_canvas_item") \
-		.set_events(OnAdd) \
+	GFObserverBuilder.new().set_name("update_canvas_group_mode_normal") \
+		.set_events(OnRemove) \
 		.with(GFCanvasItem).io_filter() \
-		.with(ChildOf, "$par") \
-		.with(GFCanvasItem).src("$par") \
-		.for_each(func(
-			item:GFCanvasItem,
-			_pair:GFPair,
-			par_item:GFCanvasItem,
-		):
-			item.set_rid(RenderingServer.canvas_item_create())
-			
-			# Set parent to root
-			var parent:= par_item.get_rid() \
-				if par_item \
-				else GFCanvasItem.get_main_canvas()
-			item.set_parent_canvas_item(parent)
+		.with(GFCanvasItem.clip_children) \
+		.for_each(func(item:GFCanvasItem, clip_children):
+			RenderingServer.canvas_item_set_canvas_group_mode(
+				item.get_rid(),
+				RenderingServer.CanvasGroupMode.CANVAS_GROUP_MODE_DISABLED,
+				)
 			)
-			
+
+	GFObserverBuilder.new().set_name("canvas_item_hide") \
+		.set_events(OnAdd) \
+		.with(GFCanvasItem) \
+		.with(GFCanvasItem.hidden) \
+		.for_each(func(item:GFCanvasItem, hidden):
+			item.set_visible(false)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_show") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.hidden) \
+		.for_each(func(item:GFCanvasItem, hidden):
+			item.set_visible(true)
+			)
 
 	GFObserverBuilder.new().set_name("update_canvas_item_on_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem) \
-		.for_each(func(item:GFCanvasItem):
-			item.set_parent_canvas_item(
-				GFCanvasItem.get_main_canvas()
-				)
+		.with_maybe(ChildOf, "$par") \
+		.with_maybe(GFCanvasItem).src("$par") \
+		.for_each(func(
+			item:GFCanvasItem,
+			_1,
+			parent_item:GFCanvasItem,
+			):
+			var parent:= parent_item.get_rid() \
+				if parent_item \
+				else GFCanvasItem.get_main_canvas()
+			item.set_parent_canvas_item(parent)
+
 			queue_redraw(item.get_source_entity())
 			)
 

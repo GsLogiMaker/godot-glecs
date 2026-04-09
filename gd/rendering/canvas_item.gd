@@ -24,12 +24,20 @@ static func get_main_canvas() -> RID:
 		.get_canvas()
 
 
+func handle_visibility_change(visible:bool) -> void:
+	RenderingServer.canvas_item_set_visible(get_rid(), visible)
+
+
 ## Sets the parent canvas item of this canvas item by its [RID].
 func set_parent_canvas_item(rid:RID) -> void:
 	RenderingServer.canvas_item_set_parent(
 		get_rid(),
 		rid
 	)
+
+
+func set_visible(visible:bool) -> void:
+	handle_visibility_change(visible)
 
 
 ## Updates the transform of this canvas item via the three 2D spatial
@@ -46,3 +54,6 @@ func update_transform_c(
 		get_rid(),
 		Transform2D(angle, size, 0, loc)
 		)
+
+class clip_children extends GFTag: pass
+class hidden extends GFTag: pass
