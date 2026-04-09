@@ -58,4 +58,6 @@ func update_transform_c(
 class clip_children extends GFTag: pass
 class hidden extends GFTag: pass
 class material extends GFMaterial: pass
+class modulate extends GFColor: pass
+class self_modulate extends modulate: pass
 class use_parent_material extends GFTag: pass

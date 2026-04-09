@@ -86,6 +86,48 @@ func _register(w:GFWorld):
 			item.set_visible(true)
 			)
 	
+	GFObserverBuilder.new().set_name("canvas_item_modulate_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.modulate) \
+		.for_each(func(item: GFCanvasItem, modulate_c: GFCanvasItem.modulate):
+			RenderingServer.canvas_item_set_modulate(
+				item.get_rid(),
+				modulate_c.get_color(),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_modulate_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.modulate) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_modulate(
+				item.get_rid(),
+				Color.WHITE,
+				)
+			)
+	
+	GFObserverBuilder.new().set_name("canvas_item_self_modulate_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.self_modulate) \
+		.for_each(func(item: GFCanvasItem, modulate_c: GFCanvasItem.self_modulate):
+			RenderingServer.canvas_item_set_self_modulate(
+				item.get_rid(),
+				modulate_c.get_color(),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_self_modulate_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.self_modulate) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_self_modulate(
+				item.get_rid(),
+				Color.WHITE,
+				)
+			)
+	
 	GFObserverBuilder.new().set_name("canvas_item_use_parent_material_add") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \

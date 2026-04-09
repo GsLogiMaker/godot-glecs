@@ -63,3 +63,19 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept"):
 		e.set(GFRect2D.color, Color(randf(), randf(), randf()))
 		c.set(GFRect2D.color, Color(randf(), randf(), randf()))
+
+func _input(event: InputEvent) -> void:
+	if Input.is_key_pressed(KEY_1):
+		e.set(GFCanvasItem.modulate, Color(randf(), randf(), randf()))
+	if Input.is_key_pressed(KEY_2):
+		if e.has(GFCanvasItem.modulate):
+			e.remove(GFCanvasItem.modulate)
+		else:
+			e.add(GFCanvasItem.modulate)
+	if Input.is_key_pressed(KEY_3):
+		e.set(GFCanvasItem.self_modulate, Color(randf(), randf(), randf()))
+	if Input.is_key_pressed(KEY_4):
+		if e.has(GFCanvasItem.self_modulate):
+			e.remove(GFCanvasItem.self_modulate)
+		else:
+			e.add(GFCanvasItem.self_modulate)
