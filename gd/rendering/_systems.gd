@@ -18,6 +18,37 @@ func _register(w:GFWorld):
 		.for_each(func(item:GFCanvasItem):
 			item.set_rid(RenderingServer.canvas_item_create())
 			)
+	
+	GFObserverBuilder.new().set_name("canvas_item_material_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem) \
+		.with(GFCanvasItem.material) \
+		.for_each(func(
+			item:GFCanvasItem,
+			material:GFCanvasItem.material,
+			):
+			var material_rid:= material.get_material().get_rid() \
+				if material.get_material() \
+				else RID()
+			RenderingServer.canvas_item_set_material(
+				item.get_rid(),
+				material_rid,
+				)
+			)
+	
+	GFObserverBuilder.new().set_name("canvas_item_material_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.material) \
+		.for_each(func(
+			item:GFCanvasItem,
+			material:GFCanvasItem.material,
+			):
+			RenderingServer.canvas_item_set_material(
+				item.get_rid(),
+				RID()
+				)
+			)
 
 	GFObserverBuilder.new().set_name("update_canvas_group_mode_clip") \
 		.set_events(OnAdd) \
@@ -53,6 +84,27 @@ func _register(w:GFWorld):
 		.with(GFCanvasItem.hidden) \
 		.for_each(func(item:GFCanvasItem, hidden):
 			item.set_visible(true)
+			)
+	
+	GFObserverBuilder.new().set_name("canvas_item_use_parent_material_add") \
+		.set_events(OnAdd) \
+		.with(GFCanvasItem) \
+		.with(GFCanvasItem.use_parent_material) \
+		.for_each(func(item:GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_use_parent_material(
+				item.get_rid(),
+				true,
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_use_parent_material_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.use_parent_material) \
+		.for_each(func(item:GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_use_parent_material(
+				item.get_rid(),
+				false,
+				)
 			)
 
 	GFObserverBuilder.new().set_name("update_canvas_item_on_set") \

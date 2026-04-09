@@ -14,13 +14,14 @@ func _ready() -> void:
 	e.add(GFRect2D)
 	e.add(GFRotation2D)
 	e.set(GFScale2D, Vector2.ONE)
+	e.set(GFCanvasItem.material, $ColorRect.material)
 	e.set(GFRect2D.size, Vector2(100, 22))
 
 	c = GFEntity.new().set_name("Child") \
 		.set_parent(e) \
-		.set(GFPosition2D, Vector2(100, 10)) \
+		.set(GFPosition2D, Vector2(10, 100)) \
 		.add(GFRect2D)
-	c.set(GFPosition2D, Vector2(100, 10))
+	c.set(GFPosition2D, Vector2(10, 100))
 
 	GFEntity.from(GFOnDraw, e.get_world()).emit(e)
 
@@ -33,8 +34,8 @@ func _process(delta: float) -> void:
 	c.get(GFCanvasItem).set_parent_canvas_item(e.get(GFCanvasItem).get_rid())
 
 	var rot_c:GFRotation2D = e.get(GFRotation2D)
-	#if Input.get_axis("ui_left", "ui_right"):
-	rot_c.set_angle(rot_c.get_angle() + (delta * Input.get_axis("ui_left", "ui_right")))
+	if Input.get_axis("ui_left", "ui_right"):
+		rot_c.set_angle(rot_c.get_angle() + (delta * Input.get_axis("ui_left", "ui_right")))
 
 	var v_axis:= Input.get_axis("ui_up", "ui_down")
 	if v_axis:
@@ -52,6 +53,13 @@ func _process(delta: float) -> void:
 			e.remove(GFCanvasItem.clip_children)
 		else:
 			e.add(GFCanvasItem.clip_children)
+	
+	if Input.is_action_just_pressed("ui_focus_next"):
+		if c.has(GFCanvasItem.use_parent_material):
+			c.remove(GFCanvasItem.use_parent_material)
+		else:
+			c.add(GFCanvasItem.use_parent_material)
 		
 	if Input.is_action_just_pressed("ui_accept"):
 		e.set(GFRect2D.color, Color(randf(), randf(), randf()))
+		c.set(GFRect2D.color, Color(randf(), randf(), randf()))

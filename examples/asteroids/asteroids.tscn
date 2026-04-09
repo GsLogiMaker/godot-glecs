@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://dglcrfdcbfvvf"]
+[gd_scene load_steps=3 format=3 uid="uid://dglcrfdcbfvvf"]
 
 [ext_resource type="Script" uid="uid://i3yerw3l8inx" path="res://addons/glecs/examples/asteroids/asteroids.gd" id="1_i0ls5"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xs1py"]
+blend_mode = 1
 
 [node name="Asteroids" type="Node2D"]
 script = ExtResource("1_i0ls5")
@@ -12,3 +15,19 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "Asteroids
 "
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("CanvasItemMaterial_xs1py")
+offset_left = -80.0
+offset_top = 89.0
+offset_right = -40.0
+offset_bottom = 129.0
+color = Color(0.47076154, 0.7776826, 0.7063582, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+material = SubResource("CanvasItemMaterial_xs1py")
+offset_left = -92.0
+offset_top = -15.0
+offset_right = 159.0
+offset_bottom = 117.0
+color = Color(0.6463204, 0.32611704, 0.3726708, 1)
