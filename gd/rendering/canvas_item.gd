@@ -57,7 +57,15 @@ func update_transform_c(
 
 class clip_children extends GFTag: pass
 class hidden extends GFTag: pass
+class light_mask extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
+	.add_member("mask", TYPE_INT)
 class material extends GFMaterial: pass
 class modulate extends GFColor: pass
 class self_modulate extends modulate: pass
+class texture_filter extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
+	.add_member("value", TYPE_INT)
+class texture_repeat extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
+	.add_member("value", TYPE_INT)
 class use_parent_material extends GFTag: pass
+class visibility_layer extends GFComponent: func _build(b:GFComponentBuilder) -> void: b \
+	.add_member("layer", TYPE_INT)

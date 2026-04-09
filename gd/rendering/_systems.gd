@@ -12,11 +12,34 @@ func _register(w:GFWorld):
 
 	#region GFCanvasItem
 	# Construct GFCanvasItem
-	GFObserverBuilder.new().set_name("construct_canvas_item") \
+	GFObserverBuilder.new().set_name("canvas_item_add") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
 		.for_each(func(item:GFCanvasItem):
 			item.set_rid(RenderingServer.canvas_item_create())
+			)
+	GFObserverBuilder.new().set_name("canvas_item_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem) \
+		.with_maybe(ChildOf, "$par") \
+		.with_maybe(GFCanvasItem).src("$par") \
+		.for_each(func(
+			item:GFCanvasItem,
+			_1,
+			parent_item:GFCanvasItem,
+			):
+			var parent:= parent_item.get_rid() \
+				if parent_item \
+				else GFCanvasItem.get_main_canvas()
+			item.set_parent_canvas_item(parent)
+
+			queue_redraw(item.get_source_entity())
+			)
+	GFObserverBuilder.new().set_name("canvas_item_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem) \
+		.for_each(func(item:GFCanvasItem):
+			RenderingServer.free_rid(item.get_rid())
 			)
 	
 	GFObserverBuilder.new().set_name("canvas_item_material_set") \
@@ -35,7 +58,6 @@ func _register(w:GFWorld):
 				material_rid,
 				)
 			)
-	
 	GFObserverBuilder.new().set_name("canvas_item_material_remove") \
 		.set_events(OnRemove) \
 		.with(GFCanvasItem).io_filter() \
@@ -50,7 +72,7 @@ func _register(w:GFWorld):
 				)
 			)
 
-	GFObserverBuilder.new().set_name("update_canvas_group_mode_clip") \
+	GFObserverBuilder.new().set_name("canvas_item_group_mode_add") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
 		.with(GFCanvasItem.clip_children) \
@@ -60,7 +82,7 @@ func _register(w:GFWorld):
 				RenderingServer.CanvasGroupMode.CANVAS_GROUP_MODE_CLIP_ONLY,
 				)
 			)
-	GFObserverBuilder.new().set_name("update_canvas_group_mode_normal") \
+	GFObserverBuilder.new().set_name("canvas_item_group_mode_remove") \
 		.set_events(OnRemove) \
 		.with(GFCanvasItem).io_filter() \
 		.with(GFCanvasItem.clip_children) \
@@ -71,19 +93,40 @@ func _register(w:GFWorld):
 				)
 			)
 
-	GFObserverBuilder.new().set_name("canvas_item_hide") \
+	GFObserverBuilder.new().set_name("canvas_item_visibility_hide") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
 		.with(GFCanvasItem.hidden) \
 		.for_each(func(item:GFCanvasItem, hidden):
 			item.set_visible(false)
 			)
-	GFObserverBuilder.new().set_name("canvas_item_show") \
+	GFObserverBuilder.new().set_name("canvas_item_visibility_show") \
 		.set_events(OnRemove) \
 		.with(GFCanvasItem).io_filter() \
 		.with(GFCanvasItem.hidden) \
 		.for_each(func(item:GFCanvasItem, hidden):
 			item.set_visible(true)
+			)
+	
+	GFObserverBuilder.new().set_name("canvas_item_light_mask_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.light_mask) \
+		.for_each(func(item: GFCanvasItem, mask_c: GFCanvasItem.light_mask):
+			RenderingServer.canvas_item_set_light_mask(
+				item.get_rid(),
+				mask_c.getm("mask"),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_light_mask_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.light_mask) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_light_mask(
+				item.get_rid(),
+				1,
+				)
 			)
 	
 	GFObserverBuilder.new().set_name("canvas_item_modulate_set") \
@@ -128,6 +171,56 @@ func _register(w:GFWorld):
 				)
 			)
 	
+	GFObserverBuilder.new().set_name("canvas_item_transform_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with_maybe(GFPosition2D) \
+		.with_maybe(GFRotation2D) \
+		.with_maybe(GFScale2D) \
+		.for_each(update_transform_c)
+	
+	GFObserverBuilder.new().set_name("canvas_item_texture_filter_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.texture_filter) \
+		.for_each(func(item: GFCanvasItem, filter_c: GFCanvasItem.texture_filter):
+			RenderingServer.canvas_item_set_default_texture_filter(
+				item.get_rid(),
+				filter_c.getm("value"),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_texture_filter_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.texture_filter) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_default_texture_filter(
+				item.get_rid(),
+				0,
+				)
+			)
+	
+	GFObserverBuilder.new().set_name("canvas_item_texture_repeat_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.texture_repeat) \
+		.for_each(func(item: GFCanvasItem, repeat_c: GFCanvasItem.texture_repeat):
+			RenderingServer.canvas_item_set_default_texture_repeat(
+				item.get_rid(),
+				repeat_c.getm("value"),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_texture_repeat_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.texture_repeat) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_default_texture_repeat(
+				item.get_rid(),
+				0,
+				)
+			)
+	
 	GFObserverBuilder.new().set_name("canvas_item_use_parent_material_add") \
 		.set_events(OnAdd) \
 		.with(GFCanvasItem) \
@@ -148,39 +241,28 @@ func _register(w:GFWorld):
 				false,
 				)
 			)
-
-	GFObserverBuilder.new().set_name("update_canvas_item_on_set") \
-		.set_events(OnSet) \
-		.with(GFCanvasItem) \
-		.with_maybe(ChildOf, "$par") \
-		.with_maybe(GFCanvasItem).src("$par") \
-		.for_each(func(
-			item:GFCanvasItem,
-			_1,
-			parent_item:GFCanvasItem,
-			):
-			var parent:= parent_item.get_rid() \
-				if parent_item \
-				else GFCanvasItem.get_main_canvas()
-			item.set_parent_canvas_item(parent)
-
-			queue_redraw(item.get_source_entity())
-			)
-
-	GFObserverBuilder.new().set_name("destruct_canvas_item") \
-		.set_events(OnRemove) \
-		.with(GFCanvasItem) \
-		.for_each(func(item:GFCanvasItem):
-			RenderingServer.free_rid(item.get_rid())
-			)
-
-	GFObserverBuilder.new().set_name("update_canvas_item_transform") \
+	
+	GFObserverBuilder.new().set_name("canvas_item_visibility_layer_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem).io_filter() \
-		.with_maybe(GFPosition2D) \
-		.with_maybe(GFRotation2D) \
-		.with_maybe(GFScale2D) \
-		.for_each(update_transform_c)
+		.with(GFCanvasItem.visibility_layer) \
+		.for_each(func(item: GFCanvasItem, layer_c: GFCanvasItem.visibility_layer):
+			RenderingServer.canvas_item_set_visibility_layer(
+				item.get_rid(),
+				layer_c.getm("layer"),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_visibility_layer_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.visibility_layer) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_visibility_layer(
+				item.get_rid(),
+				1,
+				)
+			)
+
 	#endregion
 
 	#region GFTexture2D
