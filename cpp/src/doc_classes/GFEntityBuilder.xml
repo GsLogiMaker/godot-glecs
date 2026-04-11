@@ -10,17 +10,9 @@
 		<method name="add">
 			<return type="GFEntityBuilder" />
 			<param index="0" name="entity" type="Variant" />
-			<description>
-				Adds a new entity to the builder. The built entity have [param entity] added to it.
-				TODO: Add code examples.
-			</description>
-		</method>
-		<method name="add_pair">
-			<return type="GFEntityBuilder" />
-			<param index="0" name="first" type="Variant" />
 			<param index="1" name="second" type="Variant" />
 			<description>
-				Adds a pair to the builder. The built entity will have the pair of [param first] and [param second] added to it.
+				Adds a new entity to the builder. The built entity have [param entity] added to it.
 				TODO: Add code examples.
 			</description>
 		</method>
