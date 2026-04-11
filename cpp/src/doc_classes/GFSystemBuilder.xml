@@ -41,7 +41,7 @@
 			</description>
 		</method>
 		<method name="for_each">
-			<return type="void" />
+			<return type="GFEntity" />
 			<param index="0" name="callback" type="Callable" />
 			<description>
 				Builds the system with a callback for iterating over each result.

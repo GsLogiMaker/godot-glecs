@@ -34,7 +34,7 @@ namespace godot {
 		OVERRIDE_QUERYLIKE_SELF_METHODS(GFSystemBuilder);
 
 		static Ref<GFSystemBuilder> new_in_world(GFWorld*);
-		void for_each(const Callable callable);
+		Ref<GFEntity> for_each(const Callable callable);
 
 		// **************************************
 		// *** Unexposed ***

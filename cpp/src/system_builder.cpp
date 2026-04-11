@@ -19,7 +19,7 @@ Ref<GFSystemBuilder> GFSystemBuilder::new_in_world(GFWorld* world) {
 	return memnew(GFSystemBuilder(world));
 }
 
-void GFSystemBuilder::for_each(const Callable callable) {
+Ref<GFEntity> GFSystemBuilder::for_each(const Callable callable) {
 	QUERYLIKE_BUILD_START
 
 	ecs_entity_t sys_id = GFEntityBuilder::build_id();
@@ -37,6 +37,11 @@ void GFSystemBuilder::for_each(const Callable callable) {
 	}
 
 	QUERYLIKE_BUILD_END
+
+	return GFEntity::from_id(
+		sys_id,
+		get_world()
+	);
 }
 
 // **********************************************

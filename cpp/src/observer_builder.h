@@ -32,7 +32,7 @@ namespace godot {
 
 		static Ref<GFObserverBuilder> new_in_world(GFWorld*);
 
-		void for_each(const Callable callable);
+		Ref<GFEntity> for_each(const Callable callable);
 		Ref<GFObserverBuilder> set_events_varargs(
 			const Variant** args,
 			GDExtensionInt arg_count,
