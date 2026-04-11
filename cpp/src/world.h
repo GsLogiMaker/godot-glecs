@@ -242,9 +242,9 @@ namespace godot {
 			const ecs_entity_t* static_id
 		) {
 			EcsType type = {
-				kind: ecs_type_kind_t::EcsOpaqueType,
-				existing: true,
-				partial: false,
+				.kind = ecs_type_kind_t::EcsOpaqueType,
+				.existing = true,
+				.partial = false
 			};
 			ecs_component_desc_t desc = {
 				.entity = *static_id,
