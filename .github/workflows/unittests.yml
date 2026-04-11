@@ -8,10 +8,7 @@ on:
     branches: [ "dev" ]
   workflow_dispatch:
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "build"
   cancel-in-progress: false
 
 jobs:
@@ -38,7 +35,6 @@ jobs:
     strategy:
       matrix:
         include:
-          # Linux
           - platform: linux
             arch: x86_64
             glecs_lib: ${{ needs.data.outputs.lib_debug_linux_x86_64 }}
@@ -48,15 +44,15 @@ jobs:
           #   target: i686-unknown-linux-gnu
           #   glecs_lib: libglecs.linux.template_debug.arm64.so
           #   os: ubuntu-latest
-          # Mac
+
           - platform: macos
             arch: x86_64
             glecs_lib: ${{ needs.data.outputs.lib_debug_macos_x86_64 }}
-            os: macos-13
+            os: macos-latest
           # - target: aarch64-apple-darwin
           #   os: macos-latest
           #   glecs_lib: libglecs.dylib
-          # Windows
+
           - platform: windows
             release plreleasem: windows
             arch: x86_64
@@ -64,14 +60,14 @@ jobs:
             os: windows-latest
     runs-on: ${{ matrix.os }}
     outputs:
-      # Linux
       bin_key_linux_x86_64: ${{ steps.set_cache_key.outputs.bin_key_linux_x86_64 }}
       # i686-linux_bin_key: ${{ steps.set_cache_key.outputs.i686-unknown-linux-gnu_bin_key }}
-      # Mac
+
       bin_key_macos_x86_64: ${{ steps.set_cache_key.outputs.bin_key_macos_x86_64 }}
       # bin_key_macos_i686: ${{ steps.set_cache_key.outputs.bin_key_macos_i686 }}
-      # Windows
+
       bin_key_windows_x86_64: ${{ steps.set_cache_key.outputs.bin_key_windows_x86_64 }}
+
     steps:
     - name: 🐙 Setup git environment
       uses: actions/checkout@v4
@@ -142,7 +138,7 @@ jobs:
     - name: 🏔️ Define library cache key in env
       shell: bash
       run: |
-        printf "*** Setting key in env***"
+        printf "*** Setting key in env ***"
         echo "bin_key=bin.${{ matrix.platform }}_${{ matrix.arch }}.${{ hashFiles('bin') }}" >> $GITHUB_ENV
     - name: 🏔️ Define library cache key in output
       id: set_cache_key
@@ -186,7 +182,7 @@ jobs:
             bin_key: ${{ needs.compile_glecs.outputs.bin_key_windows_x86_64 }}
             lib_debug: ${{ needs.data.outputs.lib_debug_windows_x86_64 }}
             lib_release: ${{ needs.data.outputs.lib_release_windows_x86_64 }}
-          # - os: macos-13
+          # - os: macos-latest
           #   bin_key: ${{ needs.compile_glecs.outputs.bin_key_macos_x86_64 }}
           #   lib_debug: ${{ needs.data.outputs.lib_debug_macos_x86_64 }}
           #   lib_release: ${{ needs.data.outputs.lib_release_macos_x86_64 }}

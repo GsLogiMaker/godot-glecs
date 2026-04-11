@@ -181,9 +181,9 @@ void GFWorld::setup_glecs() {
 	define_gd_component<String>("String", &glecs_meta_string);
 
 	EcsType struct_type = {
-		kind: ecs_type_kind_t::EcsStructType,
-		existing: true,
-		partial: false,
+		.kind = ecs_type_kind_t::EcsStructType,
+		.existing = true,
+		.partial = false
 	};
 
 	{ // Add glecs/meta/Vector2 type
