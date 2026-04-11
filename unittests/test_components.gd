@@ -123,6 +123,23 @@ func test_setm_no_notify():
 	assert_eq(data.i, 1)
 
 
+func test_primitive():
+	var Int:= world.lookup("/root/glecs/meta/int")
+	var array:= world.lookup("/root/glecs/meta/Array")
+	
+	var e:= GFEntity.new()
+	e.add(Int)
+	e.set(Int, 25)
+	assert_eq(e.get(Int), 25)
+	
+	e.add(array)
+	e.set(array, [2, 3])
+	var arr = e.get(array)
+	assert_eq(arr.size(), 2)
+	assert_eq(arr[0], 2)
+	assert_eq(arr[1], 3)
+
+
 class Targets extends GFRegisterableEntity: pass
 
 

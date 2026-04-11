@@ -93,17 +93,17 @@
 		<method name="from" qualifiers="static">
 			<return type="GFComponent" />
 			<param index="0" name="component" type="Variant" />
-			<param index="1" name="world" type="Variant" />
-			<param index="2" name="_unnamed_arg2" type="GFWorld" default="null" />
+			<param index="1" name="entity" type="Variant" />
+			<param index="2" name="world" type="GFWorld" default="null" />
 			<description>
 				Overrides [method GFEntity.from].
 			</description>
 		</method>
 		<method name="from_id" qualifiers="static">
 			<return type="GFComponent" />
-			<param index="0" name="id" type="int" />
-			<param index="1" name="world" type="int" />
-			<param index="2" name="_unnamed_arg2" type="GFWorld" default="null" />
+			<param index="0" name="component_id" type="int" />
+			<param index="1" name="entity_id" type="int" />
+			<param index="2" name="world" type="GFWorld" default="null" />
 			<description>
 				Overrides [method GFEntity.from_id].
 			</description>
