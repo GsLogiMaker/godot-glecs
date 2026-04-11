@@ -1359,7 +1359,14 @@ void GFWorld::init_gd_type_ptr(
 }
 
 bool GFWorld::id_has_child(ecs_entity_t parent, const char* child_name) const {
-	return ecs_lookup_child(raw(),parent, child_name) != 0;
+	return ecs_lookup_path_w_sep(
+		raw(),
+		parent,
+		child_name,
+		"/",
+		"/root/",
+		false
+	) != 0;
 }
 
 bool GFWorld::id_set_parent(ecs_entity_t id, ecs_entity_t parent) const {
@@ -1370,17 +1377,16 @@ bool GFWorld::id_set_parent(ecs_entity_t id, ecs_entity_t parent) const {
 		"Failed to set parent\n	Parent is not alive\n"
 	);
 
-	// TODO: Handle name conflicts rather than throw error
 	String new_name = String();
-	if (ecs_has_id(raw(), id, EcsName) && id_has_child(parent, ecs_get_name(raw(), id))) {
-		// Entity needs new name in parent
+	if (id_has_child(parent, ecs_get_name(raw(), id))) {
+		// Entity needs a unique name in new parent
 		new_name = entity_unique_name(parent, ecs_get_name(raw(), id));
-		ecs_remove_id(raw(), id, EcsName);
+		ecs_remove_pair(raw(), id, ecs_id(EcsIdentifier), EcsName);
 	}
 
 	ecs_add_id(raw(), id, ecs_childof(parent));
 
-	if (new_name != String()) {
+	if (!new_name.is_empty()) {
 		// Set new name
 		CharString char_new_name = new_name.utf8();
 		ecs_set_name(raw(), id, char_new_name);
@@ -1422,10 +1428,15 @@ Variant GFWorld::_variant_from_member_ptr(
 ) const {
 	Variant::Type vari_type = id_as_variant_type(member_type);
 	if (vari_type == Variant::NIL) {
+		// Member is not a godot type--maybe primitive?
 		const EcsPrimitive* primi_c = ecs_get(raw(), member_type, EcsPrimitive);
 		if (primi_c != nullptr) {
+			// Member is a primitive, convert primitive to Godot type
 			return _variant_from_member_ptr_primitive(ptr, primi_c->kind);
 		}
+
+		// Member was not a primitive, and can't be converted to a Godot type
+		return nullptr;
 	}
 
 	switch (vari_type) {
