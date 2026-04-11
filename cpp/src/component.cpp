@@ -266,8 +266,8 @@ void GFComponent::_bind_methods() {
 	GDVIRTUAL_BIND(_build, "b");
 	godot::ClassDB::bind_method(D_METHOD("_register_internal"), &GFComponent::_register_internal);
 
-	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from", "component", "world"), &GFComponent::from, nullptr);
-	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from_id", "id", "world"), &GFComponent::from_id, nullptr);
+	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from", "component", "entity", "world"), &GFComponent::from, nullptr);
+	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from_id", "component_id", "entity_id","world"), &GFComponent::from_id, nullptr);
 
 	godot::ClassDB::bind_method(D_METHOD("getm", "member"), &GFComponent::getm);
 	godot::ClassDB::bind_method(D_METHOD("setm", "member", "value"), &GFComponent::setm);
