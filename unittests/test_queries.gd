@@ -87,7 +87,7 @@ func test_up_traversal():
 	var child:= GFEntity.new() \
 		.set_name("Child") \
 		.add(Bools) \
-		.add_pair("flecs/core/ChildOf", par)
+		.add("flecs/core/ChildOf", par)
 
 	var parent_descriptions:= GFQueryBuilder.new() \
 		.with(Bools).up() \
@@ -147,10 +147,10 @@ func test_query_variable():
 	# Setup entities to query for
 	var item:= GFEntity.new() \
 		.set_name("Item3D") \
-		.add_pair(rendering, world_3d)
+		.add(rendering, world_3d)
 	var item2:= GFEntity.new() \
 		.set_name("Item2D") \
-		.add_pair(rendering, world_2d)
+		.add(rendering, world_2d)
 
 	# Run query
 	var q:= GFQueryBuilder.new() \

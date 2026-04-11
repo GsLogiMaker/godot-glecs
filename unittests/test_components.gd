@@ -91,7 +91,7 @@ func test_components_in_relationships():
 	var w:= GFWorld.new()
 
 	var e:= GFEntity.new_in_world(w)
-	var foo:Foo = e.add_pair(Targets, Foo) \
+	var foo:Foo = e.add(Targets, Foo) \
 		.get(w.pair(Targets, Foo))
 
 	foo.set_value(Vector2(54, 6))

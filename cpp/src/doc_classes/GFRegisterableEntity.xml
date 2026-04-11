@@ -21,9 +21,10 @@
 				[/codeblock]
 			</description>
 		</method>
-		<method name="add" qualifiers="const vararg">
+		<method name="add">
 			<return type="GFRegisterableEntity" />
 			<param index="0" name="component" type="Variant" />
+			<param index="1" name="second" type="Variant" default="null" />
 			<description>
 			</description>
 		</method>
@@ -33,37 +34,9 @@
 			<description>
 			</description>
 		</method>
-		<method name="add_pair" qualifiers="const vararg">
-			<return type="GFRegisterableEntity" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<description>
-			</description>
-		</method>
-		<method name="add_pairv">
-			<return type="GFRegisterableEntity" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<param index="2" name="members" type="Variant" default="[]" />
-			<description>
-			</description>
-		</method>
 		<method name="add_sibling">
 			<return type="GFRegisterableEntity" />
 			<param index="0" name="entity" type="Variant" />
-			<description>
-			</description>
-		</method>
-		<method name="add_tag">
-			<return type="GFRegisterableEntity" />
-			<param index="0" name="tag" type="Variant" />
-			<description>
-			</description>
-		</method>
-		<method name="addv">
-			<return type="GFRegisterableEntity" />
-			<param index="0" name="component" type="Variant" />
-			<param index="1" name="members" type="Variant" default="[]" />
 			<description>
 			</description>
 		</method>
@@ -112,24 +85,16 @@
 			<description>
 			</description>
 		</method>
-		<method name="set_pair" qualifiers="const vararg">
-			<return type="GFRegisterableEntity" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<description>
-			</description>
-		</method>
-		<method name="set_pairv">
-			<return type="GFRegisterableEntity" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<param index="2" name="members" type="Variant" />
-			<description>
-			</description>
-		</method>
 		<method name="set_parent">
 			<return type="GFRegisterableEntity" />
 			<param index="0" name="entity" type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="setp" qualifiers="const vararg">
+			<return type="GFRegisterableEntity" />
+			<param index="0" name="first" type="Variant" />
+			<param index="1" name="second" type="Variant" />
 			<description>
 			</description>
 		</method>

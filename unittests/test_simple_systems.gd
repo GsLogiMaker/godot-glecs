@@ -127,7 +127,7 @@ func test_strings():
 
 	var entity:= GFEntity.new() \
 		.set_name("Test") \
-		.add(Strings, "", "po")
+		.set(Strings, "", "po")
 	var strings:Strings = entity.get(Strings)
 	assert_eq(strings.a, "")
 	assert_eq(strings.b, "po")
