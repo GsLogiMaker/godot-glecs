@@ -3,9 +3,9 @@ name: Build Process
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "fix/gh-actions-windows-mac" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "dev", "fix/gh-actions-windows-mac" ]
   workflow_dispatch:
 
 jobs:
