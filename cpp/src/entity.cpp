@@ -375,17 +375,17 @@ Ref<GFEntity> GFEntity::emit(
 	return Ref(this);
 }
 
-Variant GFEntity::get_component(const Variant entity, const Variant second) const {
+Variant GFEntity::get_component(const Variant entity, const Variant second, const Variant default_value) const {
 	GFWorld* w = get_world();
 
 	ecs_entity_t comp_id = w->coerce_id(entity);
-	CHECK_ENTITY_ALIVE(comp_id, w, nullptr,
+	CHECK_ENTITY_ALIVE(comp_id, w, default_value,
 		"Failed to get component\n"
 	);
 
 	if (second.booleanize()) {
 		ecs_entity_t second_id = w->coerce_id(second);
-		CHECK_ENTITY_ALIVE(second_id, w, nullptr,
+		CHECK_ENTITY_ALIVE(second_id, w, default_value,
 			"Failed to get component\n"
 		);
 
@@ -393,7 +393,7 @@ Variant GFEntity::get_component(const Variant entity, const Variant second) cons
 	}
 
 	if (!ecs_has_id(get_world()->raw(), get_id(), comp_id)) {
-		ERR(nullptr,
+		ERR(default_value,
 			"Failed to get component\n	Could not find attached component ID: ",
 			w->id_to_text(comp_id),
 			" on entity: ",
@@ -782,7 +782,7 @@ void GFEntity::_bind_methods() {
 	godot::ClassDB::bind_static_method(GFEntity::get_class_static(), D_METHOD("from_id", "id", "world"), &GFEntity::from_id, nullptr);
 
 	godot::ClassDB::bind_method(D_METHOD("_get", "property"), &GFEntity::__get);
-	godot::ClassDB::bind_method(D_METHOD("get", "entity", "second"), &GFEntity::get_component, nullptr);
+	godot::ClassDB::bind_method(D_METHOD("get", "component", "second", "default_value"), &GFEntity::get_component, nullptr, nullptr);
 
 	godot::ClassDB::bind_method(D_METHOD("delete"), &GFEntity::delete_);
 

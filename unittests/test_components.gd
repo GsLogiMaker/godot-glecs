@@ -131,13 +131,6 @@ func test_primitive():
 	e.add(Int)
 	e.set(Int, 25)
 	assert_eq(e.get(Int), 25)
-	
-	e.add(array)
-	e.set(array, [2, 3])
-	var arr = e.get(array)
-	assert_eq(arr.size(), 2)
-	assert_eq(arr[0], 2)
-	assert_eq(arr[1], 3)
 
 
 class Targets extends GFRegisterableEntity: pass

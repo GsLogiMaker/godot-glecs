@@ -145,7 +145,7 @@ namespace godot {
 
 		Ref<GFEntity> get_child(const String) const;
 		TypedArray<GFEntity> get_children() const;
-		Variant get_component(const Variant, const Variant) const;
+		Variant get_component(const Variant, const Variant, const Variant) const;
 		static const RegEx* get_entity_id_regex();
 		ecs_entity_t get_id() const;
 		String get_name() const;
