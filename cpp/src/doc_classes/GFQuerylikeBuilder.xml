@@ -12,7 +12,7 @@
 		<method name="add">
 			<return type="GFQuerylikeBuilder" />
 			<param index="0" name="entity" type="Variant" />
-			<param index="1" name="second" type="Variant" />
+			<param index="1" name="second" type="Variant" default="null" />
 			<description>
 				Overrides [GFEntity.add].
 			</description>

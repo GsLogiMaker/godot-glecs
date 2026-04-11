@@ -117,7 +117,7 @@ func test_with_pair():
 	var data:= {ints_bools=0}
 
 	GFEntityBuilder.new() \
-		.add_pair(Ints, Bools) \
+		.add(Ints, Bools) \
 		.build()
 
 	var query:GFQuery = GFQueryBuilder.new() \

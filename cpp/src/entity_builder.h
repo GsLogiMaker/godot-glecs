@@ -19,7 +19,7 @@
 ;
 
 #define REGISTER_ENTITY_BUILDER_SELF_METHODS(Self)	\
-	godot::ClassDB::bind_method(D_METHOD("add", "entity", "second"),	&Self::add);	\
+	godot::ClassDB::bind_method(D_METHOD("add", "entity", "second"),	&Self::add, nullptr);	\
 	godot::ClassDB::bind_method(D_METHOD("set_target_entity", "entity"),	&Self::set_target_entity);	\
 	godot::ClassDB::bind_method(D_METHOD("set_name", "name"),	&Self::set_name);	\
 	godot::ClassDB::bind_method(D_METHOD("set_parent", "entity"),	&Self::set_parent, 0);	\

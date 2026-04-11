@@ -30,6 +30,15 @@ Ref<GFEntityBuilder> GFEntityBuilder::add(const Variant entity, const Variant se
 	CHECK_ENTITY_ALIVE(id, w, this,
 		"Failed to entity in builder\n"
 	);
+
+	if (second.booleanize()) {
+		ecs_entity_t second_id = w->coerce_id(second);
+		CHECK_ENTITY_ALIVE(second_id, w, this,
+			"Failed to entity in builder\n"
+		);
+		id = ecs_pair(id, second_id);
+	}
+
 	ids.append(id);
 
 	return this;
