@@ -94,8 +94,8 @@ func test_builder():
 	var e:= GFEntityBuilder.new() \
 		.set_name("Built") \
 		.add(Foo) \
-		.add_pair(Foo, Stringy) \
-		.add_pair(Stringy, Foo) \
+		.add(Foo, Stringy) \
+		.add(Stringy, Foo) \
 		.build()
 
 	assert_eq(e.get_name(), "Built", "Expected entity to be named 'Built'")

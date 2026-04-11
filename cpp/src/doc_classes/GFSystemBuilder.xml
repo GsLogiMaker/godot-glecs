@@ -21,7 +21,7 @@
 		<method name="add">
 			<return type="GFSystemBuilder" />
 			<param index="0" name="entity" type="Variant" />
-			<param index="1" name="second" type="Variant" />
+			<param index="1" name="second" type="Variant" default="null" />
 			<description>
 				Overrides [method GFEntityBuilder.add_entity].
 			</description>
