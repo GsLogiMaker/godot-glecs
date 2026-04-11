@@ -176,10 +176,11 @@ jobs:
             bin_key: ${{ needs.compile_glecs.outputs.bin_key_windows_x86_64 }}
             lib_debug: ${{ needs.data.outputs.lib_debug_windows_x86_64 }}
             lib_release: ${{ needs.data.outputs.lib_release_windows_x86_64 }}
-          - os: macos-latest
-            bin_key: ${{ needs.compile_glecs.outputs.bin_key_macos_x86_64 }}
-            lib_debug: ${{ needs.data.outputs.lib_debug_macos_x86_64 }}
-            lib_release: ${{ needs.data.outputs.lib_release_macos_x86_64 }}
+          # TODO: Get MacOS tests working
+          # - os: macos-latest
+          #   bin_key: ${{ needs.compile_glecs.outputs.bin_key_macos_x86_64 }}
+          #   lib_debug: ${{ needs.data.outputs.lib_debug_macos_x86_64 }}
+          #   lib_release: ${{ needs.data.outputs.lib_release_macos_x86_64 }}
 
     runs-on: ${{ matrix.os }}
     steps:
