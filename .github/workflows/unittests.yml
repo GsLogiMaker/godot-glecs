@@ -222,7 +222,7 @@ jobs:
         - name: 🤖 Setup Godot binary
           uses: lihop/setup-godot@v2
           with:
-            version: 4.3-stable
+            version: 4.5-stable
             bits: 64
             mono: false
 
@@ -311,13 +311,13 @@ jobs:
       - name: 🌙 Update nightly
         run: python utils/update_nightly.py --repository "${{ github.repository }}" --message "${{ github.event.head_commit.message }}"
 
-      - name: 📤 Push to nightly
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          branch: nightly
-          directory: ../nightly
+      # - name: 📤 Push to nightly
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     repository: ${{ github.repository }}
+      #     branch: nightly
+      #     directory: ../nightly
 
       - name: 🏁 Finish
         run: exit 0
