@@ -24,29 +24,13 @@ Ref<GFEntityBuilder> GFEntityBuilder::new_in_world(GFWorld* world) {
 	return Ref(memnew(GFEntityBuilder(world)));
 }
 
-Ref<GFEntityBuilder> GFEntityBuilder::add(const Variant entity) {
+Ref<GFEntityBuilder> GFEntityBuilder::add(const Variant entity, const Variant second) {
 	GFWorld* w = get_world();
 	ecs_entity_t id = w->coerce_id(entity);
 	CHECK_ENTITY_ALIVE(id, w, this,
 		"Failed to entity in builder\n"
 	);
 	ids.append(id);
-
-	return this;
-}
-
-Ref<GFEntityBuilder> GFEntityBuilder::add_pair(const Variant first, const Variant second) {
-	GFWorld* w = get_world();
-	ecs_entity_t first_id = w->coerce_id(first);
-	CHECK_ENTITY_ALIVE(first_id, w, this,
-		"Failed to add first of pair in builder\n"
-	);
-	ecs_entity_t second_id = w->coerce_id(second);
-	CHECK_ENTITY_ALIVE(second_id, w, this,
-		"Failed to add second of pair in builder\n"
-	);
-
-	ids.append(ecs_pair(first_id, second_id));
 
 	return this;
 }

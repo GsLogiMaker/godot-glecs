@@ -31,7 +31,7 @@
 				Adds a child entity.
 				Equivalent to the following:
 				[codeblock]
-				entity.add_pair("flecs/core/ChildOf", self)
+				entity.add("flecs/core/ChildOf", self)
 				[/codeblock]
 				Example:
 				[codeblock]
@@ -440,7 +440,7 @@
 				Set this entity as a child of [param entity].
 				Equivalent to the following:
 				[codeblock]
-				self.add_pair("flecs/core/ChildOf", entity)
+				self.add("flecs/core/ChildOf", entity)
 				[/codeblock]
 				Example:
 				[codeblock]
@@ -465,7 +465,7 @@
 				var entity:= GFEntity.new()
 				# Pair will be added if it is not already.
 				entity.set_pair(start, GFPosition2D, Vector2(10, 10))
-				entity.get_pair(start, GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(start, GFPosition2D).get_vec() == Vector2(10, 10) # true
 				[/codeblock]
 				This method returns [code]self[/code] for chaining.
 			</description>
@@ -482,8 +482,8 @@
 				var start:= GFEntity.new().set_name("Start")
 				var entity:= GFEntity.new()
 				# Pair will be added if it is not already.
-				entity.set_pairv(start, GFPosition2D, [Vector2(10, 10)])
-				entity.get_pair(start, GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.setpv(start, GFPosition2D, [Vector2(10, 10)])
+				entity.get(start, GFPosition2D).get_vec() == Vector2(10, 10) # true
 				[/codeblock]
 				This method returns [code]self[/code] for chaining.
 			</description>

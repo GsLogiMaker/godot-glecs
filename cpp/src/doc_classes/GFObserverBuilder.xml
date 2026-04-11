@@ -32,16 +32,9 @@
 		<method name="add">
 			<return type="GFObserverBuilder" />
 			<param index="0" name="entity" type="Variant" />
-			<description>
-				Overrides [method GFEntityBuilder.add].
-			</description>
-		</method>
-		<method name="add_pair">
-			<return type="GFObserverBuilder" />
-			<param index="0" name="first" type="Variant" />
 			<param index="1" name="second" type="Variant" />
 			<description>
-				Overrides [method GFEntityBuilder.add_pair].
+				Overrides [method GFEntityBuilder.add].
 			</description>
 		</method>
 		<method name="cascade">

@@ -12,16 +12,9 @@
 		<method name="add">
 			<return type="GFQuerylikeBuilder" />
 			<param index="0" name="entity" type="Variant" />
-			<description>
-				Overrides [GFEntity.add].
-			</description>
-		</method>
-		<method name="add_pair">
-			<return type="GFQuerylikeBuilder" />
-			<param index="0" name="first" type="Variant" />
 			<param index="1" name="second" type="Variant" />
 			<description>
-				Overrides [GFEntity.add_pair].
+				Overrides [GFEntity.add].
 			</description>
 		</method>
 		<method name="cascade">
