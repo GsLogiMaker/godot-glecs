@@ -196,8 +196,8 @@ func test_get_children():
 func test_remove():
 	var e:= GFEntity.new() \
 		.set_name("RemovingFrom") \
-		.add(Foo, 2.24) \
-		.add_pair(Foo, Stringy, 234.1)
+		.set(Foo, 2.24) \
+		.setp(Foo, Stringy, 234.1)
 
 	assert_true(e.has(Foo), "Expected RemovingFrom to have (Foo, Stringy)")
 	assert_almost_eq(e.get(Foo), 2.24, 0.01)
@@ -291,8 +291,8 @@ func test_inheritance_doc_example():
 func test_get_target_for():
 	var enterprise:= GFEntity.new() \
 		.set_name("Enterprise") \
-		.add_pair(GFPosition2D, GFScale2D) \
-		.add_pair(GFPosition2D, GFRotation2D)
+		.add(GFPosition2D, GFScale2D) \
+		.add(GFPosition2D, GFRotation2D)
 
 	var targets:= []
 	var i:= 0

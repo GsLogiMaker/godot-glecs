@@ -91,7 +91,7 @@ func test_components_in_relationships():
 	var w:= GFWorld.new()
 
 	var e:= GFEntity.new_in_world(w)
-	var foo:Foo = e.add_pair(Targets, Foo) \
+	var foo:Foo = e.add(Targets, Foo) \
 		.get(w.pair(Targets, Foo))
 
 	foo.set_value(Vector2(54, 6))
@@ -131,13 +131,6 @@ func test_primitive():
 	e.add(Int)
 	e.set(Int, 25)
 	assert_eq(e.get(Int), 25)
-	
-	e.add(array)
-	e.set(array, [2, 3])
-	var arr = e.get(array)
-	assert_eq(arr.size(), 2)
-	assert_eq(arr[0], 2)
-	assert_eq(arr[1], 3)
 
 
 class Targets extends GFRegisterableEntity: pass

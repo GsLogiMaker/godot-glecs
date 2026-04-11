@@ -21,15 +21,15 @@ func test_add_and_set_pairs() -> void:
 
 	var e:= GFEntity.new()
 
-	e.add_pair("Eats", GFRotation2D, 3.0)
+	e.setp("Eats", GFRotation2D, 3.0)
 	assert_almost_eq(
 		e.get(eats.pair(GFRotation2D)),
 		3.0,
 		0.01,
 	)
 
-	e.set_pair(eats, GFRotation2D, 3000)
-	e.add_pair(GFRotation2D, eats, 1.1)
+	e.setp(eats, GFRotation2D, 3000)
+	e.setp(GFRotation2D, eats, 1.1)
 
 	assert_almost_eq(
 		e.get(eats, GFRotation2D),
@@ -51,10 +51,10 @@ func test_basic_query():
 		.set_name("Grass")
 	var man:= GFEntity.new() \
 		.set_name("Man") \
-		.add_pair("Eats", apple)
+		.add("Eats", apple)
 	var cow:= GFEntity.new() \
 		.set_name("Cow") \
-		.add_pair("Eats", grass)
+		.add("Eats", grass)
 
 	var grass_eater_iter:= GFQueryBuilder \
 		.new() \

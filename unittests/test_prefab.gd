@@ -33,7 +33,7 @@ func test_prefab():
 	var isa:= world.coerce_id("flecs/core/IsA")
 	var myprefab:= world.coerce_id(MyPrefab)
 	var pair:= world.pair(isa, myprefab)
-	entity.add_tag(pair)
+	entity.add(pair)
 
 	# Test inhereted components exist entity
 	var foo:Foo = entity.get(Foo)
@@ -87,8 +87,8 @@ class Bar extends GFComponent:
 
 class MyPrefab extends GFRegisterableEntity:
 	func _register(_world:GFWorld) -> void:
-		add_tag("flecs/core/Prefab")
-		add(Foo, true, 23, 2.33)
-		add(Bar, Vector2(2, 1.1), 5.6)
+		add("flecs/core/Prefab")
+		set(Foo, true, 23, 2.33)
+		set(Bar, Vector2(2, 1.1), 5.6)
 
 #endregion
