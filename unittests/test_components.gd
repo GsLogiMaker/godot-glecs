@@ -23,13 +23,13 @@ func test_add_entity():
 
 func test_world_deletion():
 	var w:= GFWorld.new()
-	
+
 	var e:= GFEntity.new_in_world(w) \
 		.add(Foo) \
 		.set_name("Test")
 	var foo:= e.get(Foo)
 	assert_eq(e.get_world(), w)
-	
+
 	var e2:= GFEntity.new_in_world(w) \
 		.add(Foo) \
 		.set_name("Test")
@@ -106,7 +106,7 @@ func test_components_in_relationships():
 func test_setm_no_notify():
 	var e:= GFEntity.new() \
 		.add(Foo)
-	
+
 	var data:= {i = 0}
 	GFObserverBuilder.new() \
 		.set_events("/root/flecs/core/OnSet") \
@@ -117,11 +117,11 @@ func test_setm_no_notify():
 	foo.setm_no_notify("value", Vector2(23, 17))
 	assert_eq(foo.getm("value"), Vector2(23, 17))
 	assert_eq(data.i, 0)
-	
+
 	foo.setm("value", Vector2.ONE)
 	assert_eq(foo.getm("value"), Vector2.ONE)
 	assert_eq(data.i, 1)
-	
+
 
 class Targets extends GFRegisterableEntity: pass
 
@@ -129,6 +129,7 @@ class Targets extends GFRegisterableEntity: pass
 class Foo extends GFComponent:
 	func _build(b: GFComponentBuilder) -> void:
 		b.add_member("value", TYPE_VECTOR2)
+		b.add_member("_", TYPE_VECTOR2)
 
 	func get_value() -> Vector2:
 		return getm(&"value")

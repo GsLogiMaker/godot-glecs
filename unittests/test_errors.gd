@@ -40,6 +40,7 @@ func test_new_entity_with_unregistered_component():
 class Foo extends GFComponent:
 	func _build(b_: GFComponentBuilder) -> void:
 		b_.add_member("vec", TYPE_FLOAT)
+		b_.add_member("_", TYPE_FLOAT)
 
 class Unregistered extends GFComponent:
 	func _build(b_: GFComponentBuilder) -> void:

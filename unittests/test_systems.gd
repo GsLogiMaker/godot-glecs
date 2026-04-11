@@ -41,7 +41,6 @@ func test_stuff():
 	assert_eq(bools.a, true)
 	assert_eq(bools.b, true)
 
-
 #endregion
 
 #region Components
