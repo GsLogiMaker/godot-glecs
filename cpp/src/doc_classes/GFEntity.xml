@@ -18,7 +18,7 @@
 				[codeblock]
 				var entity:= GFEntity.new()
 				entity.add(GFPosition2D, Vector2(10, 10))
-				entity.get(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(GFPosition2D) == Vector2(10, 10) # true
 				[/codeblock]
 				This method returns [code]self[/code] for chaining.
 			</description>
@@ -109,7 +109,7 @@
 				[codeblock]
 				var entity:= GFEntity.new()
 				entity.addv(GFPosition2D, [Vector2(10, 10)])
-				entity.get(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(GFPosition2D) == Vector2(10, 10) # true
 				[/codeblock]
 				This method returns [code]self[/code] for chaining.
 			</description>
@@ -179,16 +179,17 @@
 			</description>
 		</method>
 		<method name="get" qualifiers="const">
-			<return type="GFComponent" />
+			<return type="Variant" />
 			<param index="0" name="entity" type="Variant" />
 			<param index="1" name="second" type="Variant" default="null" />
 			<description>
-				Returns a reference to this entity's component's data of type [param component].
+				Returns either a reference to this entity's component's data or returns the data directly.
+				If the component is a primitive, or only has a single member, then the primitive, or the single member, will be returned as a Variant. In all other cases, a [GFComponent] is returned and [method GFComponent.getm] can be used to retrieve the member you need.
 				Returns [code]null[/code] if the entity does not have the [param component] attached or if [param component] is not a component. The component is identified by an ID coerced from a [Variant]. To learn more about [Variant] coercion see [method GFWorld.coerce_id].
 				[codeblock]
 				var entity:= GFEntity.new()
-				entity.add("glecs/meta/Array")
-				entity.get("glecs/meta/Array") != null # true
+				entity.add("glecs/meta/int")
+				entity.get("glecs/meta/int") == 0 # true
 				[/codeblock]
 			</description>
 		</method>
@@ -453,14 +454,14 @@
 				var entity:= GFEntity.new()
 				entity.add(GFPosition2D)
 				entity.set(GFPosition2D, Vector2(10, 10))
-				entity.get(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(GFPosition2D) == Vector2(10, 10) # true
 				[/codeblock]
 				If the component is not added yet, then this method will add
 				it automaticly.
 				[codeblock]
 				var entity:= GFEntity.new()
 				entity.set(GFPosition2D, Vector2(10, 10))
-				entity.get(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(GFPosition2D) == Vector2(10, 10) # true
 				[/codeblock]
 				This method returns [code]self[/code] for chaining.
 			</description>
@@ -544,14 +545,14 @@
 				var entity:= GFEntity.new()
 				entity.add(GFPosition2D)
 				entity.setv(GFPosition2D, [Vector2(10, 10)])
-				entity.get(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(GFPosition2D) == Vector2(10, 10) # true
 				[/codeblock]
 				If the component is not added yet, then this method will add
 				it automaticly.
 				[codeblock]
 				var entity:= GFEntity.new()
 				entity.setv(GFPosition2D, [Vector2(10, 10)])
-				entity.get(GFPosition2D).get_vec() == Vector2(10, 10) # true
+				entity.get(GFPosition2D) == Vector2(10, 10) # true
 				[/codeblock]
 				This method returns [code]self[/code] for chaining.
 			</description>

@@ -145,7 +145,7 @@ namespace godot {
 
 		Ref<GFEntity> get_child(const String) const;
 		TypedArray<GFEntity> get_children() const;
-		Ref<GFComponent> get_component(const Variant, const Variant) const;
+		Variant get_component(const Variant, const Variant) const;
 		static const RegEx* get_entity_id_regex();
 		ecs_entity_t get_id() const;
 		String get_name() const;
@@ -187,7 +187,6 @@ namespace godot {
 				get_class(),
 				script->get_instance_base_type()
 			)) {
-				// UtilityFunctions::prints("SCRIPT INCAPAT", get_class(), script->get_instance_base_type(), script->get_path());
 				return;
 			}
 			set_script(script);

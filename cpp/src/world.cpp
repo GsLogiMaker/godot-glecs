@@ -180,6 +180,12 @@ void GFWorld::setup_glecs() {
 	define_gd_literal("float", ecs_primitive_kind_t::EcsF64, &glecs_meta_float);
 	define_gd_component<String>("String", &glecs_meta_string);
 
+	EcsType struct_type = {
+		kind: ecs_type_kind_t::EcsStructType,
+		existing: true,
+		partial: false,
+	};
+
 	{ // Add glecs/meta/Vector2 type
 		ecs_struct_desc_t desc = {
 			.entity = glecs_meta_vector2,
@@ -196,6 +202,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_vector2, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Vector2i type
@@ -214,6 +221,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_vector2i, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Rect type
@@ -232,6 +240,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_rect2, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Rect2i type
@@ -250,6 +259,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_rect2i, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Vector3 type
@@ -269,6 +279,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_vector3, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Vector3i type
@@ -288,6 +299,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_vector3i, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Transform2D type
@@ -307,6 +319,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_transform2d, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Vector4 type
@@ -327,6 +340,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_vector4, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Vector4i type
@@ -347,6 +361,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_vector4i, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Plane type
@@ -368,6 +383,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_plane, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Quaternion type
@@ -388,6 +404,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_quaternion, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/AABB type
@@ -406,6 +423,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_aabb, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Basis type
@@ -425,6 +443,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_basis, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Transform3D type
@@ -443,6 +462,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_transform3d, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Projection type
@@ -463,6 +483,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_projection, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	{ // Add glecs/meta/Color type
@@ -483,6 +504,7 @@ void GFWorld::setup_glecs() {
 			"/",
 			"/root/"
 		);
+		ecs_set_id(raw(), glecs_meta_color, ecs_id(EcsType), sizeof(EcsType), &struct_type);
 	}
 
 	define_gd_component<StringName>("StringName", &glecs_meta_string_name);
@@ -1359,7 +1381,14 @@ void GFWorld::init_gd_type_ptr(
 }
 
 bool GFWorld::id_has_child(ecs_entity_t parent, const char* child_name) const {
-	return ecs_lookup_child(raw(),parent, child_name) != 0;
+	return ecs_lookup_path_w_sep(
+		raw(),
+		parent,
+		child_name,
+		"/",
+		"/root/",
+		false
+	) != 0;
 }
 
 bool GFWorld::id_set_parent(ecs_entity_t id, ecs_entity_t parent) const {
@@ -1370,17 +1399,16 @@ bool GFWorld::id_set_parent(ecs_entity_t id, ecs_entity_t parent) const {
 		"Failed to set parent\n	Parent is not alive\n"
 	);
 
-	// TODO: Handle name conflicts rather than throw error
 	String new_name = String();
-	if (ecs_has_id(raw(), id, EcsName) && id_has_child(parent, ecs_get_name(raw(), id))) {
-		// Entity needs new name in parent
+	if (id_has_child(parent, ecs_get_name(raw(), id))) {
+		// Entity needs a unique name in new parent
 		new_name = entity_unique_name(parent, ecs_get_name(raw(), id));
-		ecs_remove_id(raw(), id, EcsName);
+		ecs_remove_pair(raw(), id, ecs_id(EcsIdentifier), EcsName);
 	}
 
 	ecs_add_id(raw(), id, ecs_childof(parent));
 
-	if (new_name != String()) {
+	if (!new_name.is_empty()) {
 		// Set new name
 		CharString char_new_name = new_name.utf8();
 		ecs_set_name(raw(), id, char_new_name);
@@ -1422,10 +1450,15 @@ Variant GFWorld::_variant_from_member_ptr(
 ) const {
 	Variant::Type vari_type = id_as_variant_type(member_type);
 	if (vari_type == Variant::NIL) {
+		// Member is not a godot type--maybe primitive?
 		const EcsPrimitive* primi_c = ecs_get(raw(), member_type, EcsPrimitive);
 		if (primi_c != nullptr) {
+			// Member is a primitive, convert primitive to Godot type
 			return _variant_from_member_ptr_primitive(ptr, primi_c->kind);
 		}
+
+		// Member was not a primitive, and can't be converted to a Godot type
+		return nullptr;
 	}
 
 	switch (vari_type) {

@@ -241,6 +241,11 @@ namespace godot {
 			const char* name,
 			const ecs_entity_t* static_id
 		) {
+			EcsType type = {
+				kind: ecs_type_kind_t::EcsOpaqueType,
+				existing: true,
+				partial: false,
+			};
 			ecs_component_desc_t desc = {
 				.entity = *static_id,
 				.type = {
@@ -254,6 +259,7 @@ namespace godot {
 				.copy = GFWorld::gd_type_copy<T>,
 				.move = GFWorld::gd_type_move<T>
 			}; ecs_set_hooks_id(_raw, *static_id, &hooks);
+			ecs_set_id(raw(), *static_id, ecs_id(EcsType), sizeof(EcsType), &type);
 			ecs_add_path_w_sep(
 				_raw,
 				*static_id,

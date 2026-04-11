@@ -380,10 +380,10 @@ func _register(w:GFWorld):
 	#endregion
 
 static func queue_redraw(entity:GFEntity) -> void:
-	var item:= entity.get(GFCanvasItem)
+	var item:RID = entity.get(GFCanvasItem)
 	if not item:
 		return
 
-	RenderingServer.canvas_item_clear(item.get_rid())
+	RenderingServer.canvas_item_clear(item)
 	GFEntity.from(GFOnDraw, entity.get_world()) \
 		.emit(entity)

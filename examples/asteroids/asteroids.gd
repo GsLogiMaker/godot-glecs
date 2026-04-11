@@ -32,11 +32,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	GFWorld.get_default_world().progress(0)
 	
-	c.get(GFCanvasItem).set_parent_canvas_item(e.get(GFCanvasItem).get_rid())
-
-	var rot_c:GFRotation2D = e.get(GFRotation2D)
 	if Input.get_axis("ui_left", "ui_right"):
-		rot_c.set_angle(rot_c.get_angle() + (delta * Input.get_axis("ui_left", "ui_right")))
+		e.set(GFRotation2D,
+			e.get(GFRotation2D)
+			+ (delta * Input.get_axis("ui_left", "ui_right")),
+			)
 
 	var v_axis:= Input.get_axis("ui_up", "ui_down")
 	if v_axis:
@@ -65,10 +65,8 @@ func _process(delta: float) -> void:
 		e.set(GFColorRect.color, Color(randf(), randf(), randf()))
 		c.set(GFColorRect.color, Color(randf(), randf(), randf()))
 	
-	var skew_c:= e.get(GFSkew2D)
-	prints(Input.is_key_pressed(KEY_6), int(Input.is_key_pressed(KEY_6)))
-	skew_c.set_skew(
-		skew_c.get_skew()
+	e.set(GFSkew2D,
+		e.get(GFSkew2D)
 		+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
 		* delta
 		)

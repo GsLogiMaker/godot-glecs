@@ -375,11 +375,11 @@ Ref<GFEntity> GFEntity::emit(
 	return Ref(this);
 }
 
-Ref<GFComponent> GFEntity::get_component(const Variant entity, const Variant second) const {
+Variant GFEntity::get_component(const Variant entity, const Variant second) const {
 	GFWorld* w = get_world();
 
-	ecs_entity_t id = w->coerce_id(entity);
-	CHECK_ENTITY_ALIVE(id, w, nullptr,
+	ecs_entity_t comp_id = w->coerce_id(entity);
+	CHECK_ENTITY_ALIVE(comp_id, w, nullptr,
 		"Failed to get component\n"
 	);
 
@@ -389,25 +389,51 @@ Ref<GFComponent> GFEntity::get_component(const Variant entity, const Variant sec
 			"Failed to get component\n"
 		);
 
-		id = ecs_pair(id, second_id);
+		comp_id = ecs_pair(comp_id, second_id);
 	}
 
-	if (!ecs_has_id(get_world()->raw(), get_id(), id)) {
+	if (!ecs_has_id(get_world()->raw(), get_id(), comp_id)) {
 		ERR(nullptr,
 			"Failed to get component\n	Could not find attached component ID: ",
-			w->id_to_text(id),
+			w->id_to_text(comp_id),
 			" on entity: ",
 			this
 		);
 	}
 
-	Ref<GFComponent> c = GFComponent::from_id(
-		id,
+	ecs_entity_t comp_id_main = w->get_main_id(comp_id);
+
+	const EcsStruct* struct_c = ecs_get(w->raw(), comp_id_main, EcsStruct);
+	if (struct_c != nullptr) {
+		// Component is a struct
+		if (ecs_vec_count(&struct_c->members) == 1) {
+			// Struct only has one member--return just the member instead of
+			// the whole component reference
+			ecs_member_t* member = ecs_vec_get_t(&struct_c->members, ecs_member_t, 0);
+			return w->_variant_from_member_ptr(
+				w->_comp_get_member_ptr_mut_at(get_id(), comp_id, 0),
+				member->type
+			);
+		}
+	} else {
+		// Component is not a struct--maybe primitive
+		const EcsPrimitive* primitive_c = ecs_get(w->raw(), comp_id_main, EcsPrimitive);
+		if (primitive_c != nullptr) {
+			// Component is a primitive--return just the primitive instead
+			// of the whole component reference
+			return w->_variant_from_member_ptr_primitive(
+				w->_comp_get_member_ptr_mut_at(get_id(), comp_id, 0),
+				primitive_c->kind
+			);
+		}
+	}
+
+	Ref<GFComponent> c_reference = GFComponent::from_id(
+		comp_id,
 		get_id(),
 		get_world()
 	);
-
-	return c;
+	return c_reference;
 }
 
 bool GFEntity::has_entity(const Variant entity, const Variant second) const {

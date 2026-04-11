@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dglcrfdcbfvvf"]
+[gd_scene load_steps=4 format=3 uid="uid://dglcrfdcbfvvf"]
 
 [ext_resource type="Script" uid="uid://i3yerw3l8inx" path="res://addons/glecs/examples/asteroids/asteroids.gd" id="1_i0ls5"]
+[ext_resource type="Texture2D" uid="uid://bw1r1ue5j75sw" path="res://icon.png" id="2_yg5ts"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xs1py"]
 blend_mode = 1
@@ -31,3 +32,8 @@ offset_top = -15.0
 offset_right = 159.0
 offset_bottom = 117.0
 color = Color(0.6463204, 0.32611704, 0.3726708, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_yg5ts")
+centered = false
+region_enabled = true

@@ -203,7 +203,6 @@ func test_query_source():
 	p1.add(Bools)
 	var c1:= GFEntity.new()
 	p1.add_child(c1)
-	prints(2)
 	var p2:= GFEntity.new()
 	p2.set_name("WithoutBools")
 	p2.add_child(GFEntity.new())
