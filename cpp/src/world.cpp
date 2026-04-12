@@ -770,17 +770,14 @@ void GFWorld::_register_modules_from_scripts(int depth=0) {
 	}
 }
 
-void GFWorld::start_rest_api() const {
-	ecs_entity_t rest_id = ecs_lookup_path_w_sep(
-		raw(),
-		0,
-		"flecs.rest.Rest",
-		".",
-		"",
-		false
-	);
-	EcsRest rest = (EcsRest)EcsRest();
-	ecs_set_id(raw(), rest_id, rest_id, sizeof(EcsRest), &rest);
+void GFWorld::start_rest_api(int port) const {
+	if (port == 0) {
+		port = 27750;
+	}
+	EcsRest rest = EcsRest {
+		.port = (uint16_t)port,
+	};
+	ecs_set_id(raw(), FLECS_IDEcsRestID_, FLECS_IDEcsRestID_, sizeof(EcsRest), &rest);
 }
 
 void GFWorld::set_gd_struct_from_variant(
@@ -1565,6 +1562,7 @@ GFWorld* GFWorld::get_default_world() {
 void GFWorld::set_default_world(const GFWorld* world) {
 	if (world == nullptr) {
 		local_thread_singleton = 0;
+		return;
 	}
 	local_thread_singleton = world->get_instance_id();
 }
@@ -1578,7 +1576,7 @@ void GFWorld::_bind_methods() {
 
 	godot::ClassDB::bind_method(D_METHOD("coerce_id", "entity"), &GFWorld::coerce_id);
 	godot::ClassDB::bind_method(D_METHOD("get_raw"), &GFWorld::get_raw);
-	godot::ClassDB::bind_method(D_METHOD("start_rest_api"), &GFWorld::start_rest_api);
+	godot::ClassDB::bind_method(D_METHOD("start_rest_api", "port"), &GFWorld::start_rest_api, 0);
 	godot::ClassDB::bind_method(D_METHOD("lookup", "path"), &GFWorld::lookup);
 	godot::ClassDB::bind_method(D_METHOD("pair", "first", "second"), &GFWorld::pair);
 	godot::ClassDB::bind_method(D_METHOD("pair_ids", "first", "second"), &GFWorld::pair_ids);
