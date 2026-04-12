@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="GFQuerylikeBuilder" inherits="GFEntityBuilder"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+<class name="GFQuerylikeBuilder" inherits="GFEntityBuilder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
 		The abstract base class for different query-like builders.
 	</brief_description>
@@ -13,16 +12,9 @@
 		<method name="add">
 			<return type="GFQuerylikeBuilder" />
 			<param index="0" name="entity" type="Variant" />
+			<param index="1" name="second" type="Variant" default="null" />
 			<description>
 				Overrides [GFEntity.add].
-			</description>
-		</method>
-		<method name="add_pair">
-			<return type="GFQuerylikeBuilder" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<description>
-				Overrides [GFEntity.add_pair].
 			</description>
 		</method>
 		<method name="cascade">
@@ -123,6 +115,19 @@
 			<param index="0" name="entity" type="Variant" />
 			<description>
 				Overrides [GFEntityBuilder.set_target_entity].
+			</description>
+		</method>
+		<method name="src">
+			<return type="GFQuerylikeBuilder" />
+			<param index="0" name="source" type="Variant" />
+			<description>
+				Sets the source of last term.
+				In this example, the query matches for a child whose parent has the [i]Planet[/i] component:
+				[codeblock]
+				GFQueryBuilder.new() \
+					.with(ChildOf, "$par") \
+					.with(Planet).src("$par")
+				[/codeblock]
 			</description>
 		</method>
 		<method name="up">

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="GFComponentBuilder" inherits="GFEntityBuilder"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+<class name="GFComponentBuilder" inherits="GFEntityBuilder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
 		Builder for a new component type.
 	</brief_description>
@@ -20,6 +19,7 @@
 		<method name="add">
 			<return type="GFComponentBuilder" />
 			<param index="0" name="entity" type="Variant" />
+			<param index="1" name="second" type="Variant" default="null" />
 			<description>
 				Overrides [GFEntityBuilder.add].
 			</description>
@@ -31,14 +31,6 @@
 			<description>
 				Adds a member to the new component.
 				TODO: Add code examples.
-			</description>
-		</method>
-		<method name="add_pair">
-			<return type="GFComponentBuilder" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<description>
-				Overrides [method GFEntityBuilder.add_pair].
 			</description>
 		</method>
 		<method name="build">

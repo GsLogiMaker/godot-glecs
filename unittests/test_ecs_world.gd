@@ -95,10 +95,10 @@ func test_entity_created_in_local_thread_world():
 
 func test_set_default_world_doc_example():
 	var custom_default_world = GFWorld.new()
-	
+
 	var old_default_world = GFWorld.get_default_world()
 	GFWorld.set_default_world(custom_default_world)
-	
+
 	# The following line is similar to calling this:
 	# var entity = GFEntity.new_in_world(custom_default_world)
 	var entity = GFEntity.new()
@@ -106,10 +106,11 @@ func test_set_default_world_doc_example():
 	# It is a good practice to restore the default
 	# world to whatever it was before you set it.
 	GFWorld.set_default_world(old_default_world)
-	
+
 	assert_eq(GFWorld.get_default_world(), world)
 	assert_eq(entity.get_world(), custom_default_world)
 
 class Foo extends GFComponent:
 	func _build(b: GFComponentBuilder) -> void:
 		b.add_member("vec", TYPE_FLOAT)
+		b.add_member("_", TYPE_FLOAT)

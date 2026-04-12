@@ -16,15 +16,16 @@ func after_each():
 #region Tests
 
 func test_component_get_and_set():
-	var e:GFEntity = GFEntity.new() \
-		.add(Foo) \
-		.set_name("Test")
+	var e:GFEntity = GFEntity.new()
+	e.add(Foo)
+	e.set_name("Test")
 
-	var foo:Foo = e.get(Foo)
-	assert_almost_eq(foo.value, 0.0, 0.01)
+	var x = e.get(Foo)
 
-	foo.value = 2.3
-	assert_almost_eq(foo.value, 2.3, 0.01)
+	assert_almost_eq(e.get(Foo), 0.0, 0.01)
+
+	e.set(Foo, 2.3)
+	assert_almost_eq(e.get(Foo), 2.3, 0.01)
 
 	e.delete()
 
@@ -32,8 +33,6 @@ func test_component_string_get_and_set():
 	var e:= GFEntity.new() \
 		.add(Stringy) \
 		.set_name("Test")
-
-	prints(e.get_property_list())
 
 	var foo:Stringy = e.get(Stringy)
 	foo.a = "po"
@@ -49,7 +48,7 @@ func test_new_entity_with_unregistered_component():
 	var e:GFEntity = GFEntity.new() \
 		.add(Unregistered) \
 		.set_name("Test")
-	assert_eq(e.get(Unregistered).value, 0)
+	assert_eq(e.get(Unregistered), 0)
 
 func test_creating_entity_by_new():
 	# Test that an entity is invalidated by being deleted
@@ -95,8 +94,8 @@ func test_builder():
 	var e:= GFEntityBuilder.new() \
 		.set_name("Built") \
 		.add(Foo) \
-		.add_pair(Foo, Stringy) \
-		.add_pair(Stringy, Foo) \
+		.add(Foo, Stringy) \
+		.add(Stringy, Foo) \
 		.build()
 
 	assert_eq(e.get_name(), "Built", "Expected entity to be named 'Built'")
@@ -197,20 +196,20 @@ func test_get_children():
 func test_remove():
 	var e:= GFEntity.new() \
 		.set_name("RemovingFrom") \
-		.add(Foo, 2.24) \
-		.add_pair(Foo, Stringy, 234.1)
-	
+		.set(Foo, 2.24) \
+		.setp(Foo, Stringy, 234.1)
+
 	assert_true(e.has(Foo), "Expected RemovingFrom to have (Foo, Stringy)")
-	assert_almost_eq(e.get(Foo).getm("value"), 2.24, 0.01)
+	assert_almost_eq(e.get(Foo), 2.24, 0.01)
 	assert_true(e.has(Foo, Stringy), "Expected RemovingFrom to have (Foo, Stringy)")
-	assert_almost_eq(e.get(Foo, Stringy).getm("value"), 234.1, 0.01)
-	
+	assert_almost_eq(e.get(Foo, Stringy), 234.1, 0.01)
+
 	e.remove(Foo)
 	e.remove(Foo, Stringy)
-	
+
 	assert_false(e.has(Foo))
 	assert_false(e.has(Foo, Stringy))
-	
+
 func test_add_sibling():
 	var par:= GFEntity.new()
 	var bill:= GFEntity.new() \
@@ -219,7 +218,7 @@ func test_add_sibling():
 		.add_sibling(GFEntity.new()
 			.set_name("Bob")
 		)
-	
+
 	assert_true(par.has_child("Bill"), "Expected parent to have have child named Bill")
 	assert_true(par.has_child("Bob"), "Expected parent to have have child named Bob")
 
@@ -229,18 +228,18 @@ func test_inheritance():
 		.add(GFPosition2D) \
 		.build() \
 		.set(GFPosition2D, Vector2(2, 3))
-	
+
 	assert_true(
 		ship_pfb.has(GFPosition2D),
 		"Expected `ship_pfb` to have position"
 	)
 	assert_almost_eq(
-		ship_pfb.get(GFPosition2D).get_vec(),
+		ship_pfb.get(GFPosition2D),
 		Vector2(2, 3),
 		Vector2(0.01, 0.01),
 		"Expected position in `ship_pfb` to have been set",
 	)
-	
+
 	var e:= GFEntity.new()
 	assert_false(
 		e.is_inheriting(ship_pfb),
@@ -250,7 +249,7 @@ func test_inheritance():
 		e.has(GFPosition2D),
 		"Expected `e` to NOT have position yet",
 	)
-	
+
 	e.inherit(ship_pfb)
 
 	assert_true(
@@ -261,18 +260,18 @@ func test_inheritance():
 		e.has(GFPosition2D),
 		"Expected `e` to have inherited position from `ship_pfb`",
 	)
-	
+
 	e.set(GFPosition2D, Vector2(5, 4))
-	
+
 	assert_almost_eq(
-		e.get(GFPosition2D).get_vec(),
+		e.get(GFPosition2D),
 		Vector2(5, 4),
 		Vector2(0.01, 0.01),
 		"Expected position in `e` to have been set",
 	)
 	assert_almost_ne(
-		e.get(GFPosition2D).get_vec(),
-		ship_pfb.get(GFPosition2D).get_vec(),
+		e.get(GFPosition2D),
+		ship_pfb.get(GFPosition2D),
 		Vector2(0.01, 0.01),
 		"Expected position in `e` to differ from position in `ship_pfb`",
 	)
@@ -292,9 +291,9 @@ func test_inheritance_doc_example():
 func test_get_target_for():
 	var enterprise:= GFEntity.new() \
 		.set_name("Enterprise") \
-		.add_pair(GFPosition2D, GFScale2D) \
-		.add_pair(GFPosition2D, GFRotation2D)
-	
+		.add(GFPosition2D, GFScale2D) \
+		.add(GFPosition2D, GFRotation2D)
+
 	var targets:= []
 	var i:= 0
 	while true:
@@ -304,7 +303,7 @@ func test_get_target_for():
 		else:
 			break
 		i += 1
-		
+
 	assert_true(
 		world.coerce_id(GFRotation2D) in targets,
 		"Expected Enterprise to have a position pair with a rotation target",
@@ -318,13 +317,13 @@ func test_get_target_for():
 		2,
 		"Expected Enterprise to have two position pairs",
 	)
-		
+
 func test_is_owner_of():
 	world.start_rest_api()
-	
+
 	var isa:= world.coerce_id("flecs/core/IsA")
 	var inherit:= world.pair("flecs/core/OnInstantiate", "flecs/core/Inherit")
-	
+
 	var pos:= GFComponentBuilder.new() \
 		.set_name("Pos") \
 		.add(inherit) \
@@ -338,13 +337,13 @@ func test_is_owner_of():
 		.set_name("Scl") \
 		.add_member("_", TYPE_INT) \
 		.build()
-		
+
 	var spaceship:= GFEntity.new() \
 		.set_name("Spaceship") \
 		.add("flecs/core/Prefab") \
 		.add(pos) \
 		.add(rot)
-		
+
 	var enterprise:= GFEntity.new() \
 		.set_name("Enterprise") \
 		.inherit(spaceship) \
@@ -353,20 +352,20 @@ func test_is_owner_of():
 		.set_name("Voyager") \
 		.inherit(spaceship) \
 		.add(pos)
-	
+
 	assert_false(enterprise.is_owner_of(pos), "Expected position to be owned by spaceship, not enterprise")
 	assert_true(enterprise.is_owner_of(rot), "Expected rotation to be owned by enterprise")
 	assert_true(enterprise.is_owner_of(scl), "Expected rotation to be owned by enterprise")
-	
+
 	assert_true(voyager.is_owner_of(pos), "Expected position to be owned by voyager")
 	assert_true(voyager.is_owner_of(rot), "Expected rotation to be owned by voyager")
 
 	enterprise.remove(isa, spaceship)
 	voyager.remove(isa, spaceship)
-	
+
 	assert_false(enterprise.has(isa, spaceship), "Expected isa pair to have been removed from enterprise")
 	assert_false(voyager.has(isa, spaceship), "Expected isa pair to have been removed from voyager")
-	
+
 	assert_false(enterprise.has(pos), "Expected pos to have been removed from enterprise")
 	assert_true(enterprise.has(rot), "Expected enterprise to have rot")
 	assert_true(voyager.has(pos), "Expected voyager to have pos")
@@ -374,13 +373,13 @@ func test_is_owner_of():
 
 func test_clear():
 	var tag:= GFEntity.new().set_name("tag")
-	
+
 	var e:= GFEntity.new() \
 		.set_name("Entity") \
 		.add(tag)
-	
+
 	assert_true(e.has(tag))
-	
+
 	e.clear()
 
 	assert_false(e.has(tag))
@@ -394,16 +393,18 @@ func test_set_name():
 	assert_eq(e1.get_name(), "E1")
 	assert_eq(e2.get_name(), "E2")
 	assert_eq(e3.get_name(), "E3")
-	
+
 	# Entities should make get a unique name
 	# when moved to a parent.
 	var parent:= GFEntity.new()
 	var child_1:= GFEntity.new() \
 		.set_name("Child") \
 		.set_parent(parent)
-	var child_2:= GFEntity.new() \
-		.set_name("Child") \
-		.set_parent(parent)
+
+	var child_2:= GFEntity.new()
+	child_2.set_name("Child")
+	child_2.set_parent(parent)
+
 	assert_eq(child_1.get_name(), "Child")
 	assert_eq(child_2.get_name(), "Child1")
 
@@ -415,9 +416,6 @@ class Foo extends GFComponent:
 	func _build(b_: GFComponentBuilder) -> void: b_ \
 		.set_name("Foo") \
 		.add_member("value", TYPE_FLOAT)
-	var value:float:
-		get: return getm(&"value")
-		set(v): setm(&"value", v)
 
 class Stringy extends GFComponent:
 	func _build(b_: GFComponentBuilder) -> void: b_ \

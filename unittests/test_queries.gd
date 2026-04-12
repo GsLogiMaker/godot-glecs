@@ -87,7 +87,7 @@ func test_up_traversal():
 	var child:= GFEntity.new() \
 		.set_name("Child") \
 		.add(Bools) \
-		.add_pair("flecs/core/ChildOf", par)
+		.add("flecs/core/ChildOf", par)
 
 	var parent_descriptions:= GFQueryBuilder.new() \
 		.with(Bools).up() \
@@ -117,7 +117,7 @@ func test_with_pair():
 	var data:= {ints_bools=0}
 
 	GFEntityBuilder.new() \
-		.add_pair(Ints, Bools) \
+		.add(Ints, Bools) \
 		.build()
 
 	var query:GFQuery = GFQueryBuilder.new() \
@@ -143,22 +143,22 @@ func test_query_variable():
 	var world_2d:= GFEntity.new() \
 		.set_name("World2D") \
 		.add(world_e)
-	
+
 	# Setup entities to query for
 	var item:= GFEntity.new() \
 		.set_name("Item3D") \
-		.add_pair(rendering, world_3d)
+		.add(rendering, world_3d)
 	var item2:= GFEntity.new() \
 		.set_name("Item2D") \
-		.add_pair(rendering, world_2d)
-	
+		.add(rendering, world_2d)
+
 	# Run query
 	var q:= GFQueryBuilder.new() \
 		.with(rendering, "$world") \
 		.with(world_e).from("$world") \
 		.build()
 	var results:= q.iter().into_array()
-	
+
 	assert_eq(results.size(), 2, "Expected 2 query results")
 	assert_eq(
 		results[0][0].get_id(),
@@ -181,18 +181,42 @@ func test_src_doc_example():
 		.add(Velocity)
 	var asteroid = GFEntity.new() \
 		.add(Velocity)
-	
+
 	# Query only for Velocity of the ship, not the asteroid
 	var query = GFQueryBuilder.new() \
 		.with(Velocity).from(ship) \
 		.build()
-	
+
 	var arr = query.iter().into_array()
 	assert_eq(arr.size(), 1)
-	
+
 	var velocity_c:GFComponent = arr[0][0]
 	assert_eq(velocity_c.get_id(), Velocity.get_id())
 	assert_eq(velocity_c.get_source_id(), ship.get_id())
+
+
+func test_query_source():
+	var ChildOf = GFWorld.get_default_world().lookup("/root/flecs/core/ChildOf")
+
+	var p1:= GFEntity.new()
+	p1.set_name("WithBools")
+	p1.add(Bools)
+	var c1:= GFEntity.new()
+	p1.add_child(c1)
+	var p2:= GFEntity.new()
+	p2.set_name("WithoutBools")
+	p2.add_child(GFEntity.new())
+
+	var builder:= GFQueryBuilder.new()
+	builder.with(ChildOf, "$par")
+	builder.with(Bools).src("$par")
+	var query:GFQuery = builder.build()
+
+	var results = query.iter().into_array()
+	assert_eq(results.size(), 1)
+
+	var bools_c:GFComponent = results[0][1]
+	assert_eq(bools_c.get_source_entity().get_name(), "WithBools")
 
 #endregion
 

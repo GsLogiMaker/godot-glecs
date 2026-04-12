@@ -3,6 +3,7 @@ extends Node2D
 
 var texture:= load("res://icon.png")
 var e:GFEntity
+var c:GFEntity
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -14,18 +15,23 @@ func _ready() -> void:
 	e.set_name("Body")
 	e.add(GFTexture2D, texture)
 	e.add(GFCanvasItem)
-	e.add_pair(GFCollisionBody2D, GFRigidBody)
+
+	e.add(GFCollisionBody2D, GFRigidBody)
 	e.set(GFPosition2D, Vector2(100, 0))
 	var shape:= GFEntity.new() \
 		.set_name("Shape") \
 		.add(GFRectangleShape2D) \
-		.add_pair("flecs/core/ChildOf", e)
-	#e.add(GFTexture2D, texture)
-	e.add(GFPosition2D, Vector2(0, 0))
-	e.add(GFDrawRect2D)
-	e.add(GFPosition2D)
-	e.add(GFRotation2D)
-	e.set_pair(GFSize2D, GFDrawRect2D, Vector2(100, 22))
+		.set_parent(e)
+
+	e.add(GFColorRect)
+	e.set(GFColorRect.size, Vector2(100, 22))
+	e.set(GFColorRect.color, Color.RED)
+
+	c = GFEntity.new().set_name("Child") \
+		.set_parent(e) \
+		.set(GFPosition2D, Vector2(10, 100)) \
+		.add(GFColorRect)
+	c.set(GFPosition2D, Vector2(10, 100))
 
 	GFEntity.from(GFOnDraw, e.get_world()).emit(e)
 
@@ -33,7 +39,61 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	GFWorld.get_singleton().progress(delta)
+	GFWorld.get_default_world().progress(0)
+
+	if Input.get_axis("ui_left", "ui_right"):
+		e.set(GFRotation2D,
+			e.get(GFRotation2D, 0, 0.0)
+			+ (delta * Input.get_axis("ui_left", "ui_right")),
+			)
+
+	var v_axis:= Input.get_axis("ui_up", "ui_down")
+	if v_axis:
+		e.set(GFColorRect.size,
+			e.get(GFColorRect.size, 0 ,Vector2.ZERO)
+			- Vector2(0, 100 * delta * v_axis),
+			)
+
+	if Input.is_action_just_pressed("ui_text_delete"):
+		if e.has(GFCanvasItem.hidden):
+			e.remove(GFCanvasItem.hidden)
+		else:
+			e.add(GFCanvasItem.hidden)
+
+	if Input.is_action_just_pressed("ui_end"):
+		if e.has(GFCanvasItem.clip_children):
+			e.remove(GFCanvasItem.clip_children)
+		else:
+			e.add(GFCanvasItem.clip_children)
+
+	if Input.is_action_just_pressed("ui_focus_next"):
+		if c.has(GFCanvasItem.use_parent_material):
+			c.remove(GFCanvasItem.use_parent_material)
+		else:
+			c.add(GFCanvasItem.use_parent_material)
 
 	if Input.is_action_just_pressed("ui_accept"):
-		e.set(GFPosition2D, Vector2(200, 000))
+		e.set(GFColorRect.color, Color(randf(), randf(), randf()))
+		c.set(GFColorRect.color, Color(randf(), randf(), randf()))
+
+	e.set(GFSkew2D,
+		e.get(GFSkew2D, 0, 0.0)
+		+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
+		* delta
+		)
+
+func _input(event: InputEvent) -> void:
+	if Input.is_key_pressed(KEY_1):
+		e.set(GFCanvasItem.modulate, Color(randf(), randf(), randf()))
+	if Input.is_key_pressed(KEY_2):
+		if e.has(GFCanvasItem.modulate):
+			e.remove(GFCanvasItem.modulate)
+		else:
+			e.add(GFCanvasItem.modulate)
+	if Input.is_key_pressed(KEY_3):
+		e.set(GFCanvasItem.self_modulate, Color(randf(), randf(), randf()))
+	if Input.is_key_pressed(KEY_4):
+		if e.has(GFCanvasItem.self_modulate):
+			e.remove(GFCanvasItem.self_modulate)
+		else:
+			e.add(GFCanvasItem.self_modulate)

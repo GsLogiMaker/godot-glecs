@@ -231,12 +231,37 @@ void GFComponent::build_data_from_members(
 	ecs_entity_t component_id,
 	const GFWorld* world
 ) {
-	const EcsStruct* struct_data = GFComponent::get_struct_ptr(world, component_id);
-	if (struct_data == nullptr) {
+	if (members.size() == 0) {
 		ERR(/**/,
-			"Could not build data from Array\n",
-			"	Entity ", world->id_to_text(component_id), " is not a struct."
+			"Could not set component's data\n",
+			"	No values were provided."
 		);
+	}
+
+	const EcsStruct* struct_data = GFComponent::get_struct_ptr(
+		world,
+		component_id
+	);
+	if (struct_data == nullptr) {
+		// Component is not a struct--maybe a primitive
+		if (!ecs_has_id(world->raw(), component_id, ecs_id(EcsPrimitive))) {
+			ERR(/**/,
+				"Could not set component's data\n",
+				"	Component ", world->id_to_text(component_id), " is not a struct or primitive."
+			);
+		}
+		if (members.size() > 1) {
+			ERR(/**/,
+				"Could not set component's data\n",
+				"	Component ", world->id_to_text(component_id),
+				" is a primitive, but more than value was provided."
+			);
+		}
+
+		// Component is a primitive, and exactly one value was provided
+		// Set primitive from value
+		Utils::set_type_from_variant(members[0], component_id, world, output);
+		return;
 	}
 
 	for (int i=0; i != members.size() && i != ecs_vec_size(&struct_data->members); i++) {
@@ -266,8 +291,8 @@ void GFComponent::_bind_methods() {
 	GDVIRTUAL_BIND(_build, "b");
 	godot::ClassDB::bind_method(D_METHOD("_register_internal"), &GFComponent::_register_internal);
 
-	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from", "component", "world"), &GFComponent::from, nullptr);
-	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from_id", "id", "world"), &GFComponent::from_id, nullptr);
+	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from", "component", "entity", "world"), &GFComponent::from, nullptr);
+	godot::ClassDB::bind_static_method(get_class_static(), D_METHOD("from_id", "component_id", "entity_id","world"), &GFComponent::from_id, nullptr);
 
 	godot::ClassDB::bind_method(D_METHOD("getm", "member"), &GFComponent::getm);
 	godot::ClassDB::bind_method(D_METHOD("setm", "member", "value"), &GFComponent::setm);

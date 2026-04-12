@@ -107,6 +107,8 @@ bool Utils::can_convert_type_to_primitive(Variant::Type type, ecs_primitive_kind
 			switch (primi) {
 				case EcsU8: case EcsU16: case EcsU32: case EcsU64:
 				case EcsI8: case EcsI16: case EcsI32: case EcsI64:
+				case EcsF32: case EcsF64:
+				case EcsId: case EcsEntity: case EcsChar: case EcsByte:
 					return true;
 				default:
 					return false;
@@ -114,6 +116,8 @@ bool Utils::can_convert_type_to_primitive(Variant::Type type, ecs_primitive_kind
 		}
         case Variant::FLOAT: {
 			switch (primi) {
+				case EcsU8: case EcsU16: case EcsU32: case EcsU64:
+				case EcsI8: case EcsI16: case EcsI32: case EcsI64:
 				case EcsF32: case EcsF64:
 					return true;
 				default:
@@ -178,13 +182,13 @@ void Utils::set_primitive_from_variant(
 	case EcsI64: *static_cast<int64_t*>(out) = value; break;
 	case EcsF32: *static_cast<real_t*>(out) = value; break;
 	case EcsF64: *static_cast<double*>(out) = value; break;
-	case EcsId: *static_cast<ecs_entity_t*>(out) = value; break;
-	case EcsChar: ERR(/**/, "Can not convert to char primitive from Variant type ", Variant::get_type_name(value.get_type()));
-	case EcsByte: ERR(/**/, "Can not convert to byte primitive from Variant type ", Variant::get_type_name(value.get_type()));
+	case EcsId: *static_cast<ecs_id_t*>(out) = value; break;
+	case EcsChar: *static_cast<uint8_t*>(out) = value; break;
+	case EcsByte: *static_cast<uint8_t*>(out) = value; break;
 	case EcsUPtr: ERR(/**/, "Can not convert to UPointer primitive from Variant type ", Variant::get_type_name(value.get_type()));
 	case EcsIPtr: ERR(/**/, "Can not convert to IPointer primitive from Variant type ", Variant::get_type_name(value.get_type()));
 	case EcsString: ERR(/**/, "Can not convert to string primitive from Variant type ", Variant::get_type_name(value.get_type()));
-	case EcsEntity: ERR(/**/, "Can not convert to entity primitive from Variant type ", Variant::get_type_name(value.get_type()));
+	case EcsEntity: *static_cast<ecs_entity_t*>(out) = value; break;
 	}
 }
 

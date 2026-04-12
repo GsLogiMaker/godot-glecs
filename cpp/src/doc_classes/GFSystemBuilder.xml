@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="GFSystemBuilder" inherits="GFQuerylikeBuilder"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+<class name="GFSystemBuilder" inherits="GFQuerylikeBuilder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
 		A builder for systems.
 	</brief_description>
@@ -22,16 +21,9 @@
 		<method name="add">
 			<return type="GFSystemBuilder" />
 			<param index="0" name="entity" type="Variant" />
+			<param index="1" name="second" type="Variant" default="null" />
 			<description>
 				Overrides [method GFEntityBuilder.add_entity].
-			</description>
-		</method>
-		<method name="add_pair">
-			<return type="GFSystemBuilder" />
-			<param index="0" name="first" type="Variant" />
-			<param index="1" name="second" type="Variant" />
-			<description>
-				Overrides [method GFEntityBuilder.add_pair].
 			</description>
 		</method>
 		<method name="cascade">
@@ -49,7 +41,7 @@
 			</description>
 		</method>
 		<method name="for_each">
-			<return type="void" />
+			<return type="GFEntity" />
 			<param index="0" name="callback" type="Callable" />
 			<description>
 				Builds the system with a callback for iterating over each result.
@@ -132,6 +124,13 @@
 			<param index="0" name="entity" type="Variant" />
 			<description>
 				Overrides [method GFEntityBuilder.set_target_entity].
+			</description>
+		</method>
+		<method name="src">
+			<return type="GFSystemBuilder" />
+			<param index="0" name="source" type="Variant" />
+			<description>
+				Overrides [method GFQuerylikeBuilder.src].
 			</description>
 		</method>
 		<method name="up">

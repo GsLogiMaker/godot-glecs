@@ -95,13 +95,17 @@ void GFModule::_register_internal() {
 				ecs_set_name(get_world()->raw(), ett->get_id(), name.utf8());
 			}
 		}
-
-		GFRegisterableEntity::_register_internal();
 	});
+
+	// Call super method
+	GFRegisterableEntity::_register_internal();
 }
 
 void GFModule::_register_user() {
 	GLECS_SCOPE(get_world(), get_id(), {
+		// Call super method
+		GFRegisterableEntity::_register_user();
+
 		Ref<Script> script = get_script();
 		Dictionary constants = script->get_script_constant_map();
 		Array keys = constants.keys();
@@ -111,6 +115,7 @@ void GFModule::_register_user() {
 			if (!variant_is_registerable_script(const_val)) {
 				continue;
 			}
+
 			Ref<Script> const_script = const_val;
 
 			// Initialize sub-item
@@ -123,8 +128,6 @@ void GFModule::_register_user() {
 
 			ett->call_user_register();
 		}
-
-		GFRegisterableEntity::_register_user();
 	});
 }
 

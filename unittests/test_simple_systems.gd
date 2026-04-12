@@ -127,7 +127,7 @@ func test_strings():
 
 	var entity:= GFEntity.new() \
 		.set_name("Test") \
-		.add(Strings, "", "po")
+		.set(Strings, "", "po")
 	var strings:Strings = entity.get(Strings)
 	assert_eq(strings.a, "")
 	assert_eq(strings.b, "po")
@@ -175,20 +175,20 @@ func test_textures():
 		.add(Textures) \
 		.set_name("Test")
 	entity.get(Textures).a = null
-	entity.get(Textures).b = load("res://icon.svg")
+	entity.get(Textures).b = load("res://icon.png")
 
 	# Assert that setting Object to null works
-	assert_eq(entity.get(Textures).b, load("res://icon.svg"))
+	assert_eq(entity.get(Textures).b, load("res://icon.png"))
 	entity.get(Textures).b = null
 	assert_eq(entity.get(Textures).b, null)
-	entity.get(Textures).b = load("res://icon.svg")
+	entity.get(Textures).b = load("res://icon.png")
 
 	world.progress(0.0)
 	world.progress(0.0)
 	world.progress(0.0)
 
-	assert_eq(entity.get(Textures).a, load("res://icon.svg"))
-	assert_eq(entity.get(Textures).b, load("res://icon.svg"))
+	assert_eq(entity.get(Textures).a, load("res://icon.png"))
+	assert_eq(entity.get(Textures).b, load("res://icon.png"))
 
 	entity.delete()
 

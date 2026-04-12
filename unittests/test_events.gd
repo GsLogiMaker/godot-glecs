@@ -55,7 +55,7 @@ func test_on_set_event():
 			)
 
 	var e:= GFEntity.new() \
-		.add(Ints, 2, 31) \
+		.set(Ints, 2, 31) \
 		.set_name("WithInts")
 	var e2:= GFEntity.new() \
 		.set_name("WithoutInts")
@@ -64,7 +64,7 @@ func test_on_set_event():
 	var e4:= GFEntity.new() \
 		.set_name("WithoutInts")
 
-	e3.add(Ints, 99, 2)
+	e3.set(Ints, 99, 2)
 
 	assert_eq(data.i, 2 + 31 + 99 + 2)
 
@@ -87,7 +87,7 @@ func test_on_add_event_with_objects():
 		.add(Textures) \
 		.set_name("WithInts")
 	assert_eq(data.i, 1)
-	assert_eq(e.get(Textures).a, null)
+	assert_eq(e.get(Textures), null)
 
 	e.delete()
 
@@ -96,9 +96,9 @@ func test_on_add_event_with_objects():
 	data.i = 0
 	var e2:= GFEntity.new() \
 		.set_name("WithTextures")
-	e2.add(Textures, load("res://icon.png"))
+	e2.set(Textures, load("res://icon.png"))
 	assert_eq(data.i, 1)
-	assert_eq(e2.get(Textures).a, load("res://icon.png"))
+	assert_eq(e2.get(Textures), load("res://icon.png"))
 
 	e2.delete()
 
@@ -142,8 +142,5 @@ class Ints extends GFComponent:
 class Textures extends GFComponent:
 	func _build(b:GFComponentBuilder) -> void:
 		b.add_member("a", TYPE_OBJECT)
-	var a:Texture2D:
-		get: return getm(&"a")
-		set(v): setm(&"a", v)
 
 #endregion
