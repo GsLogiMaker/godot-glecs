@@ -107,8 +107,11 @@ void QueryIterationContext::update_component_entities(ecs_iter_t* it, int entity
 			continue;
 		}
 
-		ecs_entity_t source = ecs_field_src(it, term_i);
-		if (source == 0) {
+		ecs_entity_t source = 0;
+		if (it->entities) {
+			source = ecs_field_src(it, term_i);
+		}
+		if (!get_world()->is_id_alive(source)) {
 			source = it->entities[entity_index];
 		}
 
@@ -130,7 +133,8 @@ void QueryIterationContext::update_component_terms(ecs_iter_t* it) {
 
 		const ecs_term_t* term = &terms[term_i];
 		Ref<GFEntity> comp_ref = comp_ref_per_term[term_i];
-		comp_ref->set_id(it->ids[i_arg]);
+		ecs_entity_t comp_ref_id = it->ids[i_arg];
+		comp_ref->set_id(comp_ref_id);
 
 		switch (term->oper) {
 			case ecs_oper_kind_t::EcsAnd:
