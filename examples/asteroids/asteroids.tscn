@@ -6,9 +6,6 @@
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xs1py"]
 blend_mode = 1
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_4dt8d"]
-size = Vector2(10, 10)
-
 [node name="Asteroids" type="Node2D"]
 script = ExtResource("1_i0ls5")
 

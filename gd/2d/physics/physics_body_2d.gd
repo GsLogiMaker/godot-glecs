@@ -1,12 +1,13 @@
 
-class_name GFCollisionBody2D extends GFComponent
+class_name GFPhysicsBody2D extends GFComponent
 
 func get_rid() -> RID: return getm("rid")
-func _set_rid(rid:RID) -> void: setm("rid", rid)
+func _set_rid(rid:RID) -> void:
+	setm("rid", rid)
 
-func _build(b:GFComponentBuilder) -> void: b \
-		.add_member("rid", TYPE_RID) \
-		.add("/root/flecs/core/Exclusive")
+func _build(b:GFComponentBuilder) -> void:
+	b.add_member("rid", TYPE_RID)
+	b.add("/root/flecs/core/With", "/root/flecs/core/OrderedChildren")
 
 func get_position() -> Vector2:
 	var tr:Transform2D = PhysicsServer2D.body_get_state(
