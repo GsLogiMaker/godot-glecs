@@ -839,18 +839,19 @@ ecs_entity_t GFWorld::variant_type_to_id(Variant::Type type) {
 }
 
 String GFWorld::id_to_text(ecs_entity_t id) const {
-	CHECK_ENTITY_ALIVE(id, this, "",
-		"Failed to convert ID to text\n"
-	);
 	if (ecs_id_is_pair(id)) {
 		return String("(")
-			+ id_to_text(ECS_PAIR_FIRST(id)) + ", "
-			+ id_to_text(ECS_PAIR_SECOND(id)) + ")"
+		+ id_to_text(ECS_PAIR_FIRST(id)) + ", "
+		+ id_to_text(ECS_PAIR_SECOND(id)) + ")"
 		;
 	}
-	return String(ecs_get_name(raw(), id))
-		+ "#" + String::num_int64(id)
-	;
+	String name = "";
+	if (!ecs_is_alive(raw(), id)) {
+		name = "<DEAD>";
+	} else {
+		name = ecs_get_name(raw(), id);
+	}
+	return name + "#" + String::num_int64(id);
 }
 
 

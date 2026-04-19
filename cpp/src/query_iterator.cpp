@@ -36,17 +36,18 @@ Variant GFQueryIterator::_iter_get(Variant arg) {
 		Ref<GFEntity> entity = ctx->comp_ref_args[i];
 		if (entity->get_class() == GFComponent::get_class_static()) {
 			Ref<GFComponent> comp = ctx->comp_ref_args[i];
-			result.append(memnew(GFComponent(
-				comp->get_source_id(),
+			Ref<GFComponent> new_ref = QueryIterationContext::instance_from(
 				comp->get_id(),
 				comp->get_world()
-			)));
-		} else if (entity->get_class() == GFTag::get_class_static()) {
-			Ref<GFTag> tag = ctx->comp_ref_args[i];
-			result.append(memnew(GFTag(
+			);
+			new_ref->set_source_id(comp->get_source_id());
+			result.append(new_ref);
+		} else {
+			Ref<GFEntity> tag = ctx->comp_ref_args[i];
+			result.append(QueryIterationContext::instance_from(
 				tag->get_id(),
 				tag->get_world()
-			)));
+			));
 		}
 	}
 	return result;

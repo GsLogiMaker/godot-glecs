@@ -53,7 +53,6 @@ Ref<GFObserverBuilder> GFObserverBuilder::set_events_varargs(
 	GDExtensionCallError& error
 ) {
 	if (arg_count > FLECS_EVENT_DESC_MAX) {
-		// TODO: utilize call error
 		ERR(Ref(this),
 			"Failed to set terms in observer builder",
 			"Max term count is ", FLECS_EVENT_DESC_MAX, ", but ",

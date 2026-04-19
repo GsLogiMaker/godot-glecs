@@ -16,19 +16,32 @@ func _ready() -> void:
 	e.set(GFColorRect.color, Color.RED)
 
 	c = GFEntity.new().set_name("Child") \
-		.set_parent(e) \
 		.set(GFPosition2D, Vector2(10, 100)) \
-		.add(GFColorRect)
-	c.set(GFPosition2D, Vector2(10, 100))
+		#.add(GFColorRect) \
+		.set_parent(e) \
+		.add(GFCollisionShape2D)
+
+	c.set(GFCollisionShape2D, RectangleShape2D.new())
+	c.get(GFCollisionShape2D).size = Vector2(10, 10)
+
+
+	var static_body:= GFEntity.new() \
+		.set_name("StaticBody") \
+		.add(GFStaticBody2D) \
+		.set(GFPosition2D, Vector2(0, 200))
+	var rect_shape:= RectangleShape2D.new()
+	rect_shape.size = Vector2(1000, 10)
+	static_body.add_child(
+		GFEntity.new()
+			.set(GFCollisionShape2D, rect_shape)
+		)
 
 	GFEntity.from(GFOnDraw, e.get_world()).emit(e)
-
-	GFWorld.get_default_world().start_rest_api()
 
 
 func _process(delta: float) -> void:
 	GFWorld.get_default_world().progress(0)
-	
+
 	if Input.get_axis("ui_left", "ui_right"):
 		e.set(GFRotation2D,
 			e.get(GFRotation2D, 0, 0.0)
@@ -47,28 +60,38 @@ func _process(delta: float) -> void:
 			e.remove(GFCanvasItem.hidden)
 		else:
 			e.add(GFCanvasItem.hidden)
-	
+
 	if Input.is_action_just_pressed("ui_end"):
 		if e.has(GFCanvasItem.clip_children):
 			e.remove(GFCanvasItem.clip_children)
 		else:
 			e.add(GFCanvasItem.clip_children)
-	
+
 	if Input.is_action_just_pressed("ui_focus_next"):
 		if c.has(GFCanvasItem.use_parent_material):
 			c.remove(GFCanvasItem.use_parent_material)
 		else:
 			c.add(GFCanvasItem.use_parent_material)
-		
+
 	if Input.is_action_just_pressed("ui_accept"):
 		e.set(GFColorRect.color, Color(randf(), randf(), randf()))
 		c.set(GFColorRect.color, Color(randf(), randf(), randf()))
-	
+<<<<<<< Updated upstream
+
 	e.set(GFSkew2D,
 		e.get(GFSkew2D, 0, 0.0)
 		+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
 		* delta
 		)
+=======
+
+	if Input.is_key_pressed(KEY_6) or Input.is_key_pressed(KEY_5):
+		e.set(GFSkew2D,
+			e.get(GFSkew2D, 0, 0.0)
+			+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
+			* delta
+			)
+>>>>>>> Stashed changes
 
 func _input(event: InputEvent) -> void:
 	if Input.is_key_pressed(KEY_1):
@@ -85,4 +108,3 @@ func _input(event: InputEvent) -> void:
 			e.remove(GFCanvasItem.self_modulate)
 		else:
 			e.add(GFCanvasItem.self_modulate)
-	

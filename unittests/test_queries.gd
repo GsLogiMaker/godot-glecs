@@ -58,26 +58,43 @@ func test_optional_terms():
 	assert_eq(data.bools, 3 + (1), "Expected `Bools` to be queried 4 times total") # Extra 1 from previous system running
 
 func test_or_operation_terms():
-	var data:= {ints=0, bools=0}
-	GFSystemBuilder.new() \
-		.with(Bools).or_with(Ints) \
-		.for_each(func(bools_or_ints:GFComponent):
-			if bools_or_ints is Ints:
-				data.ints += 1
-			if bools_or_ints is Bools:
-				data.bools += 1
-			)
+	var q:= GFQueryBuilder.new() \
+		.with(Bools) \
+			.or_with(Ints) \
+			.or_with(Strings) \
+		.build()
 
 	GFEntity.new().add(Ints)
-	GFEntity.new().add(Ints)
+	GFEntity.new().add(Strings)
 	GFEntity.new().add(Ints)
 	GFEntity.new().add(Bools)
 	GFEntity.new().add(Ints).add(Bools)
 
-	world.progress(0.0)
+	var script_counts:= {ints=0, bools=0, strings=0}
+	var id_counts:= {ints=0, bools=0, strings=0}
+	
+	for args in q.iter():
+		var ref:GFComponent = args[0]
+		if ref is Ints:
+			script_counts.ints += 1
+		if ref is Bools:
+			script_counts.bools += 1
+		if ref is Strings:
+			script_counts.strings += 1
+		if ref.get_id() == world.coerce_id(Ints):
+			id_counts.ints += 1
+		if ref.get_id() == world.coerce_id(Bools):
+			id_counts.bools += 1
+		if ref.get_id() == world.coerce_id(Strings):
+			id_counts.strings += 1
 
-	assert_eq(data.ints, 3)
-	assert_eq(data.bools, 2)
+	assert_eq(script_counts.ints, 2)
+	assert_eq(script_counts.bools, 2)
+	assert_eq(script_counts.strings, 1)
+	
+	assert_eq(id_counts.ints, 2)
+	assert_eq(id_counts.bools, 2)
+	assert_eq(id_counts.strings, 1)
 
 
 func test_up_traversal():
@@ -96,8 +113,8 @@ func test_up_traversal():
 
 	var i:= 0
 	for desc in parent_descriptions.iter():
-		assert_true(desc[0].get_source_id() == par.get_id(), "Expecteded 1st item to be the parent")
-		assert_true(desc[1].get_source_id() == child.get_id(), "Expecteded 2nd item to be the child")
+		assert_true(desc[0].get_source_id() == par.get_id(), "Expecteded 1st item to be the parent but is %0" % [desc[0]])
+		assert_true(desc[1].get_source_id() == child.get_id(), "Expecteded 2nd item to be the child but is %0" % [desc[0]])
 		i += 1
 
 	assert_eq(i, 1, "Expected query to match 1 item")
@@ -163,8 +180,8 @@ func test_query_variable():
 	assert_eq(
 		results[0][0].get_id(),
 		world.pair_ids(rendering.get_id(), world_3d.get_id()),
-		"Expected " + str(results[0][0]) + " to equal "
-			+ str(rendering.pair(world_3d))
+		"Expected " + str(GFEntity.from(results[0][0])) + " to equal "
+			+ str(GFEntity.from(rendering.pair(world_3d)))
 	)
 	assert_eq(
 		results[1][0].get_id(),
@@ -207,9 +224,9 @@ func test_query_source():
 	p2.set_name("WithoutBools")
 	p2.add_child(GFEntity.new())
 
-	var builder:= GFQueryBuilder.new()
-	builder.with(ChildOf, "$par")
-	builder.with(Bools).src("$par")
+	var builder:= GFQueryBuilder.new() \
+		.with(ChildOf, "$par") \
+		.with(Bools).src("$par")
 	var query:GFQuery = builder.build()
 
 	var results = query.iter().into_array()
@@ -217,6 +234,27 @@ func test_query_source():
 
 	var bools_c:GFComponent = results[0][1]
 	assert_eq(bools_c.get_source_entity().get_name(), "WithBools")
+
+
+func test_with_any():
+	var Any = GFWorld.get_default_world().lookup("/root/flecs/core/*")
+	var ChildOf = GFWorld.get_default_world().lookup("/root/flecs/core/ChildOf")
+	
+	var child:= GFEntity.new() \
+		.add(Ints)
+	var parent:= GFEntity.new() \
+		.add_child(child)
+	
+	var query:= GFQueryBuilder.new() \
+		.with(ChildOf, parent) \
+		.with(Any) \
+		.build()
+	var args:= query.iter().into_array()
+	
+	assert_eq(args.size(), 1)
+	assert_eq(args[0][1].get_id(), world.coerce_id(Ints))
+	assert_eq(args[0][1].get_script(), Ints)
+	assert_eq(args[0][1].get_source_id(), child.get_id())
 
 #endregion
 
@@ -243,6 +281,18 @@ class Ints extends GFComponent:
 		get: return getm(&"a")
 		set(v): setm(&"a", v)
 	var b:int:
+		get: return getm(&"b")
+		set(v): setm(&"b", v)
+
+class Strings extends GFComponent:
+	func _build(b_: GFComponentBuilder) -> void:
+		b_.add_member("a", TYPE_STRING)
+		b_.add_member("b", TYPE_STRING)
+		b_.set_name("STRINGS")
+	var a:String:
+		get: return getm(&"a")
+		set(v): setm(&"a", v)
+	var b:String:
 		get: return getm(&"b")
 		set(v): setm(&"b", v)
 

@@ -14,6 +14,46 @@
 
 using namespace godot;
 
+ecs_entity_t deref_entity(const ecs_iter_t* it, const ecs_term_ref_t* ref) {
+	if (ref->name == nullptr) {
+		return 0;
+	}
+	int var_index = ecs_query_find_var(it->query, ref->name);
+	if (!ecs_query_var_is_entity(it->query, var_index)) {
+		return 0;
+	}
+	if (it->variables->entity == 0) {
+		return 0;
+	}
+	return it->variables->entity;
+}
+
+ecs_entity_t deref_component(
+	const ecs_iter_t* it,
+	const ecs_term_ref_t* first_ref,
+	const ecs_term_ref_t* second_ref,
+	ecs_entity_t arg_index
+) {
+	ecs_entity_t first = deref_entity(it, first_ref);
+	ecs_entity_t second = deref_entity(it, first_ref);
+
+	if (second) {
+		return ecs_pair(first, second);
+	}
+	if (first) {
+		return first;
+	}
+
+	return it->ids[arg_index];
+}
+
+ecs_entity_t deref_source(const ecs_iter_t* it, const ecs_term_ref_t* source_ref, int arg_index, int entity_index) {
+	ecs_entity_t source = deref_entity(it, source_ref);
+	source = source ? source : ecs_field_src(it, arg_index);
+	source = source ? source : it->entities[entity_index];
+	return source;
+}
+
 // **********************************************
 // *** PUBLIC ***
 // **********************************************
@@ -25,16 +65,11 @@ ecs_entity_t get_compmonent_of_term(const ecs_term_t* term) {
 	return term->id;
 }
 
-Ref<GFEntity> instance_from(ecs_entity_t id, GFWorld* world) {
-	ecs_entity_t main_id = world->get_main_id(id); // Get main ID, if pair, for checking if ID is component
-	if (ecs_has(world->raw(), main_id, EcsComponent)) {
-		return GFComponent::from_id_no_source(
-			id,
-			world
-		);
-	} else {
-		return GFTag::from_id(id, world);
-	}
+Ref<GFEntity> QueryIterationContext::instance_from(ecs_entity_t id, GFWorld* world) {
+	return GFComponent::from_id_no_source(
+		id,
+		world
+	);
 }
 
 QueryIterationContext::QueryIterationContext(
@@ -94,6 +129,7 @@ GFWorld* QueryIterationContext::get_world() const {
 void QueryIterationContext::update_component_entities(ecs_iter_t* it, int entity_index) const {
 	for (int comp_i=0; comp_i != comp_ref_args.size(); comp_i++) {
 		int term_i = comp_ref_term_ids[comp_i];
+		const ecs_term_t* term = &it->query->terms[term_i];
 
 		Ref<GFEntity> added_entity = comp_ref_args[comp_i];
 		if (added_entity == nullptr) {
@@ -107,10 +143,7 @@ void QueryIterationContext::update_component_entities(ecs_iter_t* it, int entity
 			continue;
 		}
 
-		ecs_entity_t source = ecs_field_src(it, term_i);
-		if (source == 0) {
-			source = it->entities[entity_index];
-		}
+		ecs_entity_t source = deref_source(it, &term->src, comp_i, entity_index);;
 
 		// Set source of added ID
 		Ref<GFComponent> comp = added_entity;
@@ -121,48 +154,39 @@ void QueryIterationContext::update_component_entities(ecs_iter_t* it, int entity
 void QueryIterationContext::update_component_terms(ecs_iter_t* it) {
 	const ecs_term_t* terms = it->query->terms;
 
-	int i_arg = 0;
-	for (int term_i=0; term_i != it->query->term_count; term_i++) {
-		ecs_entity_t entity_id = ecs_field_src(it, term_i);
-		if (entity_id == 0) {
-			entity_id = it->entities[0];
-		}
-
-		const ecs_term_t* term = &terms[term_i];
-		Ref<GFEntity> comp_ref = comp_ref_per_term[term_i];
-		comp_ref->set_id(it->ids[i_arg]);
+	int arg_index = 0;
+	for (int term_index=0; term_index != it->query->term_count; term_index++) {
+		const ecs_term_t* term = &terms[term_index];
+		ecs_entity_t source_id = deref_source(it, &term->src, arg_index, 0);
+		Ref<GFEntity> term_comp_ref = comp_ref_per_term[term_index];
+		Ref<GFEntity> setting_arg_ref = nullptr;
 
 		switch (term->oper) {
 			case ecs_oper_kind_t::EcsAnd:
-				comp_ref_args[i_arg] = comp_ref;
-				comp_ref_term_ids[i_arg] = term_i;
-				i_arg += 1;
+				setting_arg_ref = term_comp_ref;
+				comp_ref_term_ids[arg_index] = term_index;
 				break;
 
 			case ecs_oper_kind_t::EcsOptional:
-				if (!ecs_has_id(world->raw(), entity_id, term->id)) {
-					// Term is null due to being optional
-					comp_ref_args[i_arg] = Variant();
-					comp_ref_term_ids[i_arg] = term_i;
+				if (ecs_has_id(world->raw(), source_id, term_comp_ref->get_id())) {
+					setting_arg_ref = term_comp_ref;
 				} else {
-					comp_ref_args[i_arg] = comp_ref;
-					comp_ref_term_ids[i_arg] = term_i;
+					setting_arg_ref = Variant();
 				}
-				i_arg += 1;
+				comp_ref_term_ids[arg_index] = term_index;
 				break;
 
 			case ecs_oper_kind_t::EcsOr:
-				if (term->id == it->ids[i_arg]) {
+				if (ecs_has_id(get_world()->raw(), source_id, term_comp_ref->get_id())) {
 					// Term matches OR chain, set arg to term
-					comp_ref_args[i_arg] = comp_ref;
-					comp_ref_term_ids[i_arg] = term_i;
-					i_arg += 1;
-					// Skip terms till OR chain is exited.
-					// There is guaranteed to be another none OR term at the
-					// end of the chain, so we don't need to check for the end of
-					// the terms list.
-					while (terms[term_i].oper == ecs_oper_kind_t::EcsOr) {
-						term_i++;
+					setting_arg_ref = term_comp_ref;
+					comp_ref_term_ids[arg_index] = term_index;
+					while (terms[term_index].oper == ecs_oper_kind_t::EcsOr) {
+						// Skip terms till OR chain is exited.
+						// There is guaranteed to be another none OR term at the
+						// end of the chain, so we don't need to check for the end of
+						// the terms list.
+						term_index++;
 					}
 					// Final term in OR chain is skipped by for loop.
 				} else {
@@ -170,17 +194,28 @@ void QueryIterationContext::update_component_terms(ecs_iter_t* it) {
 					// matching term is found in OR chain.
 					// Arg may remain null if the final term is
 					// optional or negative.
-					comp_ref_args[i_arg] = Variant();
-					comp_ref_term_ids[i_arg] = term_i;
+					setting_arg_ref = Variant();
+					comp_ref_term_ids[arg_index] = term_index;
 				}
-
 				break;
 
 			case ecs_oper_kind_t::EcsNot:
-				// NOT terms don't add arguments, do nothing
+				// NOT terms don't add arguments -- do nothing
 				break;
 		}
 
+		if (setting_arg_ref != nullptr) {
+			ecs_entity_t term_comp_id = deref_component(it, &terms->first, &terms->second, arg_index);
+			setting_arg_ref->set_id(term_comp_id);
+
+			comp_ref_args[arg_index] = setting_arg_ref;
+			arg_index += 1;
+		} else {
+			comp_ref_args[arg_index] = Variant();
+			if (term->oper == ecs_oper_kind_t::EcsOptional) {
+				arg_index += 1;
+			}
+		}
 	}
 }
 
