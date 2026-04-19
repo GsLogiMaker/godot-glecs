@@ -42,6 +42,8 @@ namespace godot {
 		Callable get_callable() const;
 		GFWorld* get_world() const;
 
+		static Ref<GFEntity> instance_from(ecs_entity_t id, GFWorld* world);
+
 		void update_component_entities(ecs_iter_t* it, int entity_index) const;
 		void update_component_terms(ecs_iter_t* it);
 		static void iterator_callback(ecs_iter_t* it);

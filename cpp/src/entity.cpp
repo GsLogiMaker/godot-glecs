@@ -687,7 +687,17 @@ String GFEntity::_to_string() const {
 // --- Unexposed ---
 // ----------------------------------------------
 
-void GFEntity::set_id(const ecs_entity_t value) { id = value; }
+void GFEntity::set_id(const ecs_entity_t value) {
+	ecs_entity_t old = id;
+	id = value;
+
+	if (get_world()->get_main_id(old) == get_world()->get_main_id(id)) {
+		// Script does not need to be updated -- no change in main ID -- exit early
+		return;
+	}
+
+	update_script();
+}
 void GFEntity::set_world(const GFWorld* value) { world_instance_id = value->get_instance_id(); }
 
 void GFEntity::_bind_methods() {

@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dglcrfdcbfvvf"]
+[gd_scene load_steps=5 format=3 uid="uid://dglcrfdcbfvvf"]
 
 [ext_resource type="Script" uid="uid://i3yerw3l8inx" path="res://addons/glecs/examples/asteroids/asteroids.gd" id="1_i0ls5"]
 [ext_resource type="Texture2D" uid="uid://bw1r1ue5j75sw" path="res://icon.png" id="2_yg5ts"]
@@ -37,3 +37,9 @@ color = Color(0.6463204, 0.32611704, 0.3726708, 1)
 texture = ExtResource("2_yg5ts")
 centered = false
 region_enabled = true
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 269)
+shape = SubResource("WorldBoundaryShape2D_yg5ts")
