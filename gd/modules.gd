@@ -5,7 +5,6 @@
 class_name _GlecsModules extends Node
 
 const MODULES:= [
-	"./core/_module.gd",
 	"./2d/_module.gd",
 	"./rendering/_module.gd",
 ]

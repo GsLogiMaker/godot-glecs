@@ -21,6 +21,11 @@ func _register(w:GFWorld):
 	GFObserverBuilder.new().set_name("canvas_item_set") \
 		.set_events(OnSet) \
 		.with(GFCanvasItem) \
+		# TODO: Support the following syntax
+		# .maybe_with_scope(func(b): b \
+		# 	.with(ChildOf, "$par") \
+		# 	.with(GFCanvasItem).src("$par") \
+		# 	)
 		.with_maybe(ChildOf, "$par") \
 		.with_maybe(GFCanvasItem).src("$par") \
 		.for_each(func(
@@ -28,6 +33,9 @@ func _register(w:GFWorld):
 			_1,
 			parent_item:GFCanvasItem,
 			):
+			if parent_item != null and parent_item.get_rid() == item.get_rid():
+				parent_item = null
+
 			var parent:= parent_item.get_rid() \
 				if parent_item \
 				else GFCanvasItem.get_main_canvas()
@@ -297,6 +305,69 @@ func _register(w:GFWorld):
 			RenderingServer.canvas_item_set_visibility_layer(
 				item.get_rid(),
 				1,
+				)
+			)
+
+	GFObserverBuilder.new().set_name("canvas_item_y_sort_enabled_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.y_sort_enabled) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_sort_children_by_y(
+				item.get_rid(),
+				true,
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_y_sort_enabled_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.y_sort_enabled) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_sort_children_by_y(
+				item.get_rid(),
+				false,
+				)
+			)
+
+	GFObserverBuilder.new().set_name("canvas_item_z_index_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.z_index) \
+		.for_each(func(item: GFCanvasItem, z_index_c: GFCanvasItem.z_index):
+			RenderingServer.canvas_item_set_z_index(
+				item.get_rid(),
+				z_index_c.getm("index"),
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_z_index_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.z_index) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_z_index(
+				item.get_rid(),
+				0,
+				)
+			)
+
+	GFObserverBuilder.new().set_name("canvas_item_z_as_relative_set") \
+		.set_events(OnSet) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.z_as_relative) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_z_as_relative_to_parent(
+				item.get_rid(),
+				true,
+				)
+			)
+	GFObserverBuilder.new().set_name("canvas_item_z_as_relative_remove") \
+		.set_events(OnRemove) \
+		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem.z_as_relative) \
+		.for_each(func(item: GFCanvasItem, _1):
+			RenderingServer.canvas_item_set_z_as_relative_to_parent(
+				item.get_rid(),
+				false,
 				)
 			)
 
