@@ -7,6 +7,7 @@
 #include "godot_cpp/core/gdvirtual.gen.inc"
 #include "godot_cpp/core/property_info.hpp"
 #include "registerable_entity.h"
+#include "tag.h"
 #include "world.h"
 
 #include <flecs.h>
@@ -15,21 +16,21 @@
 
 namespace godot {
 
-	class GFComponent : public GFRegisterableEntity {
-		GDCLASS(GFComponent, GFRegisterableEntity)
+	class GFComponent : public GFTag {
+		GDCLASS(GFComponent, GFTag)
 
 	public:
 		GFComponent(ecs_entity_t component, GFWorld* world):
-			GFRegisterableEntity(component, world),
+			GFTag(component, world),
 			source_entity_id(0)
 		{}
 		GFComponent(ecs_entity_t entity, ecs_entity_t component, GFWorld* world):
 			source_entity_id(entity),
-			GFRegisterableEntity(component, world)
+			GFTag(component, world)
 		{}
 		GFComponent():
 			source_entity_id(0),
-			GFRegisterableEntity(0, nullptr)
+			GFTag(0, nullptr)
 		{}
 		~GFComponent() {};
 

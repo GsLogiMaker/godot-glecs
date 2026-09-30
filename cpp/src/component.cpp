@@ -34,7 +34,6 @@ Ref<GFComponent> GFComponent::from_id(
 	GFWorld* world
 ) {
 	world = GFWorld::world_or_singleton(world);
-
 	Ref<GFComponent> comp_ref = memnew(GFComponent(entity, comp, world));
 	return setup_template<GFComponent>(comp_ref);
 }
@@ -75,6 +74,7 @@ void GFComponent::_register_internal() {
 	}
 
 	// Call super method
+	// TODO: Maybe change to GFTag::_register_insternal();
 	GFRegisterableEntity::_register_internal();
 }
 

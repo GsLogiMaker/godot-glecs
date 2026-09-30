@@ -1,6 +1,7 @@
 extends GFModule
 
 const Systems:= preload("./_systems.gd")
+const SystemsSprite2D:= preload("./_systems_sprite2d.gd")
 
 func _register(world: GFWorld) -> void:
 	set_name("rendering")

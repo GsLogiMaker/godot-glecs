@@ -156,10 +156,10 @@ func test_iter_children():
 	var parent:= GFEntity.new() \
 		.add_child(GFEntity.new()
 			.set_name("George")
-		) \
+			) \
 		.add_child(GFEntity.new()
 			.set_name("Riley")
-		)
+			)
 
 	var child_count:= 0
 	var has_george:= false
@@ -177,10 +177,10 @@ func test_get_children():
 	var parent:= GFEntity.new() \
 		.add_child(GFEntity.new()
 			.set_name("George")
-		) \
+			) \
 		.add_child(GFEntity.new()
 			.set_name("Riley")
-		)
+			)
 
 	var children = parent.get_children()
 	var has_george:= false
@@ -199,10 +199,10 @@ func test_remove():
 		.set(Foo, 2.24) \
 		.setp(Foo, Stringy, 234.1)
 
-	assert_true(e.has(Foo), "Expected RemovingFrom to have (Foo, Stringy)")
+	assert_true(e.has(Foo), "Expected RemovingFrom to have Foo")
 	assert_almost_eq(e.get(Foo), 2.24, 0.01)
 	assert_true(e.has(Foo, Stringy), "Expected RemovingFrom to have (Foo, Stringy)")
-	assert_almost_eq(e.get(Foo, Stringy), 234.1, 0.01)
+	assert_almost_eq(e.getp(Foo, Stringy), 234.1, 0.01)
 
 	e.remove(Foo)
 	e.remove(Foo, Stringy)

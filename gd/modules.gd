@@ -5,6 +5,7 @@
 class_name _GlecsModules extends Node
 
 const MODULES:= [
+	"./meta/_module.gd",
 	"./2d/_module.gd",
 	"./rendering/_module.gd",
 ]
@@ -16,4 +17,7 @@ static var x:= (func():
 static func register_modules(w:GFWorld) -> void:
 	var path:= (_GlecsModules as Script).resource_path.path_join("../")
 	for module in MODULES:
-		w.register_script(load(path.path_join(module)))
+		var script = load(path.path_join(module))
+		if script == null:
+			breakpoint
+		w.register_script(script)

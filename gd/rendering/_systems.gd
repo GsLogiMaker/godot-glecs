@@ -202,7 +202,7 @@ func _register(w:GFWorld):
 
 	GFObserverBuilder.new().set_name("canvas_item_transform_set") \
 		.set_events(OnSet) \
-		.with(GFCanvasItem).io_filter() \
+		.with(GFCanvasItem) \
 		.with_maybe(GFPosition2D) \
 		.with_maybe(GFRotation2D) \
 		.with_maybe(GFSkew2D) \
@@ -451,7 +451,7 @@ func _register(w:GFWorld):
 	#endregion
 
 static func queue_redraw(entity:GFEntity) -> void:
-	var item:RID = entity.get(GFCanvasItem)
+	var item:RID = entity.get(GFCanvasItem, RID())
 	if not item:
 		return
 

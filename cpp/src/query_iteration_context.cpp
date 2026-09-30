@@ -4,6 +4,7 @@
 #include "godot_cpp/variant/utility_functions.hpp"
 #include "querylike_builder.h"
 #include "component.h"
+#include "registerable_entity.h"
 #include "godot_cpp/variant/callable.hpp"
 #include "godot_cpp/variant/variant.hpp"
 #include "tag.h"
@@ -84,12 +85,10 @@ QueryIterationContext::QueryIterationContext(
 		switch (terms[i].oper) {
 			case ecs_oper_kind_t::EcsAnd:
 			case ecs_oper_kind_t::EcsOptional:
-				comp_ref_per_term.append(
-					instance_from(
-						get_compmonent_of_term(&terms[i]),
-						get_world()
-					)
-				);
+				comp_ref_per_term.append(instance_from(
+					get_compmonent_of_term(&terms[i]),
+					get_world()
+				));
 				comp_ref_args.append(Variant());
 				comp_ref_term_ids.append(i);
 				break;

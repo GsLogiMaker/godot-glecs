@@ -120,7 +120,10 @@ namespace godot {
 
 		Ref<GFEntity> get_child(const String) const;
 		TypedArray<GFEntity> get_children() const;
-		Variant get_component(const Variant, const Variant, const Variant) const;
+		Variant get_component(const Variant) const;
+		Variant get_component_or_value(const Variant, const Variant) const;
+		Variant get_pair(const Variant, const Variant) const;
+		Variant get_pair_or_value(const Variant, const Variant, const Variant) const;
 		static const RegEx* get_entity_id_regex();
 		ecs_entity_t get_id() const;
 		String get_name() const;
@@ -153,19 +156,7 @@ namespace godot {
 		// --------------------------------------
 
 		/// Assigns the correct script to this entity according to its ID.
-		void update_script() {
-			Ref<Script> script = get_world()->get_registered_script(get_id());
-			if (script == nullptr) {
-				return;
-			}
-			if (!ClassDB::is_parent_class(
-				get_class(),
-				script->get_instance_base_type()
-			)) {
-				return;
-			}
-			set_script(script);
-		}
+		void update_script();
 
 		template<typename T>
 		static Ref<T> setup_template(const Ref<T> e) {

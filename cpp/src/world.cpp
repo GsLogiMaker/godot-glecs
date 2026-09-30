@@ -854,8 +854,6 @@ String GFWorld::id_to_text(ecs_entity_t id) const {
 	return name + "#" + String::num_int64(id);
 }
 
-
-
 Variant::Type GFWorld::id_as_variant_type(ecs_entity_t id) const {
 	if (id < GFWorld::glecs_meta_nil || id > glecs_meta_packed_vector4_array) {
 		return godot::Variant::NIL;

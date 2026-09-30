@@ -15,6 +15,7 @@
 // needed here because entity.h does not include
 // component.h, but uses forward declaration instead
 #include "component.h"
+#include "tag.h"
 #include "pair.h"
 
 #include <flecs.h>
@@ -291,7 +292,27 @@ Ref<GFEntity> GFEntity::emit(
 	return Ref(this);
 }
 
-Variant GFEntity::get_component(const Variant entity, const Variant second, const Variant default_value) const {
+Variant GFEntity::get_component(const Variant entity) const {
+	GFWorld* w = get_world();
+
+	ecs_entity_t comp_id = w->coerce_id(entity);
+	CHECK_ENTITY_ALIVE(comp_id, w, nullptr,
+		"Failed to get component\n"
+	);
+
+	if (!ecs_has_id(w->raw(), get_id(), comp_id)) {
+		return nullptr;
+	}
+
+	Ref<GFComponent> c_reference = GFComponent::from_id(
+		comp_id,
+		get_id(),
+		get_world()
+	);
+	return c_reference;
+}
+
+Variant GFEntity::get_component_or_value(const Variant entity, const Variant default_value) const {
 	GFWorld* w = get_world();
 
 	ecs_entity_t comp_id = w->coerce_id(entity);
@@ -299,27 +320,13 @@ Variant GFEntity::get_component(const Variant entity, const Variant second, cons
 		"Failed to get component\n"
 	);
 
-	if (second.booleanize()) {
-		ecs_entity_t second_id = w->coerce_id(second);
-		CHECK_ENTITY_ALIVE(second_id, w, default_value,
-			"Failed to get component\n"
-		);
-
-		comp_id = ecs_pair(comp_id, second_id);
+	if (!ecs_has_id(w->raw(), get_id(), comp_id)) {
+		return default_value;
 	}
 
-	if (!ecs_has_id(get_world()->raw(), get_id(), comp_id)) {
-		ERR(default_value,
-			"Failed to get component\n	Could not find attached component ID: ",
-			w->id_to_text(comp_id),
-			" on entity: ",
-			this
-		);
-	}
+	ecs_entity_t comp_main_id = w->get_main_id(comp_id);
 
-	ecs_entity_t comp_id_main = w->get_main_id(comp_id);
-
-	const EcsStruct* struct_c = ecs_get(w->raw(), comp_id_main, EcsStruct);
+	const EcsStruct* struct_c = ecs_get(w->raw(), comp_main_id, EcsStruct);
 	if (struct_c != nullptr) {
 		// Component is a struct
 		if (ecs_vec_count(&struct_c->members) == 1) {
@@ -333,7 +340,7 @@ Variant GFEntity::get_component(const Variant entity, const Variant second, cons
 		}
 	} else {
 		// Component is not a struct--maybe primitive
-		const EcsPrimitive* primitive_c = ecs_get(w->raw(), comp_id_main, EcsPrimitive);
+		const EcsPrimitive* primitive_c = ecs_get(w->raw(), comp_main_id, EcsPrimitive);
 		if (primitive_c != nullptr) {
 			// Component is a primitive--return just the primitive instead
 			// of the whole component reference
@@ -351,6 +358,48 @@ Variant GFEntity::get_component(const Variant entity, const Variant second, cons
 	);
 	return c_reference;
 }
+
+Variant GFEntity::get_pair(const Variant entity, const Variant second) const {
+	GFWorld* w = get_world();
+
+	ecs_entity_t comp_id = w->coerce_id(entity);
+	CHECK_ENTITY_ALIVE(comp_id, w, nullptr,
+		"Failed to get component\n"
+	);
+
+	if (second.booleanize()) {
+		ecs_entity_t second_id = w->coerce_id(second);
+		CHECK_ENTITY_ALIVE(second_id, w, nullptr,
+			"Failed to get component\n"
+		);
+
+		comp_id = ecs_pair(comp_id, second_id);
+	}
+
+	return this->get_component(comp_id);
+}
+
+
+Variant GFEntity::get_pair_or_value(const Variant first, const Variant second, const Variant default_value) const {
+	GFWorld* w = get_world();
+
+	ecs_entity_t comp_id = w->coerce_id(first);
+	CHECK_ENTITY_ALIVE(comp_id, w, default_value,
+		"Failed to get component\n"
+	);
+
+	if (second.booleanize()) {
+		ecs_entity_t second_id = w->coerce_id(second);
+		CHECK_ENTITY_ALIVE(second_id, w, default_value,
+			"Failed to get component\n"
+		);
+
+		comp_id = ecs_pair(comp_id, second_id);
+	}
+
+	return this->get_component_or_value(comp_id, default_value);
+}
+
 
 bool GFEntity::has_entity(const Variant entity, const Variant second) const {
 	GFWorld* w = get_world();
@@ -700,6 +749,21 @@ void GFEntity::set_id(const ecs_entity_t value) {
 }
 void GFEntity::set_world(const GFWorld* value) { world_instance_id = value->get_instance_id(); }
 
+void GFEntity::update_script() {
+	Ref<Script> script = get_world()->get_registered_script(get_id());
+	if (script == nullptr) {
+		return;
+	}
+	// TODO: Make class check recursive
+	if (!ClassDB::is_parent_class(
+		get_class(),
+		script->get_instance_base_type()
+	)) {
+		return;
+	}
+	set_script(script);
+}
+
 void GFEntity::_bind_methods() {
 	REGISTER_ENTITY_SELF_METHODS(GFEntity);
 
@@ -708,12 +772,15 @@ void GFEntity::_bind_methods() {
 	godot::ClassDB::bind_static_method(GFEntity::get_class_static(), D_METHOD("from_id", "id", "world"), &GFEntity::from_id, nullptr);
 
 	godot::ClassDB::bind_method(D_METHOD("_get", "property"), &GFEntity::__get);
-	godot::ClassDB::bind_method(D_METHOD("get", "component", "second", "default_value"), &GFEntity::get_component, nullptr, nullptr);
+	godot::ClassDB::bind_method(D_METHOD("get", "component", "default_value"), &GFEntity::get_component_or_value, nullptr);
+	godot::ClassDB::bind_method(D_METHOD("getp", "first", "second", "default_value"), &GFEntity::get_pair_or_value, nullptr);
 
 	godot::ClassDB::bind_method(D_METHOD("delete"), &GFEntity::delete_);
 
 	godot::ClassDB::bind_method(D_METHOD("get_child", "path"), &GFEntity::get_child);
 	godot::ClassDB::bind_method(D_METHOD("get_children"), &GFEntity::get_children);
+	godot::ClassDB::bind_method(D_METHOD("get_component", "component"), &GFEntity::get_component);
+	godot::ClassDB::bind_method(D_METHOD("get_pair", "first", "second"), &GFEntity::get_pair);
 	godot::ClassDB::bind_method(D_METHOD("get_id"), &GFEntity::get_id);
 	godot::ClassDB::bind_method(D_METHOD("get_name"), &GFEntity::get_name);
 	godot::ClassDB::bind_method(D_METHOD("get_parent"), &GFEntity::get_parent);

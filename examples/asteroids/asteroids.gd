@@ -10,33 +10,10 @@ var c:GFEntity
 func _ready() -> void:
 	e = GFEntity.new()
 	e.set_name("Test")
-	e.add(GFCanvasItem)
-	e.add(GFColorRect)
-	e.set(GFColorRect.size, Vector2(100, 22))
-	e.set(GFColorRect.color, Color.RED)
-
-	c = GFEntity.new().set_name("Child") \
-		.set(GFPosition2D, Vector2(10, 100)) \
-		#.add(GFColorRect) \
-		.set_parent(e) \
-		.add(GFCollisionShape2D)
-
-	c.set(GFCollisionShape2D, RectangleShape2D.new())
-	c.get(GFCollisionShape2D).size = Vector2(10, 10)
-
-
-	var static_body:= GFEntity.new() \
-		.set_name("StaticBody") \
-		.add(GFStaticBody2D) \
-		.set(GFPosition2D, Vector2(0, 200))
-	var rect_shape:= RectangleShape2D.new()
-	rect_shape.size = Vector2(1000, 10)
-	static_body.add_child(
-		GFEntity.new()
-			.set(GFCollisionShape2D, rect_shape)
-		)
-
-	GFEntity.from(GFOnDraw, e.get_world()).emit(e)
+	e.add(GFSprite2D)
+	e.set(GFSprite2D, load("res://icon.png"))
+	print("pre center")
+	e.add(GFSprite2D.centered)
 
 
 func _process(delta: float) -> void:
@@ -44,14 +21,14 @@ func _process(delta: float) -> void:
 
 	if Input.get_axis("ui_left", "ui_right"):
 		e.set(GFRotation2D,
-			e.get(GFRotation2D, 0, 0.0)
+			e.get(GFRotation2D, 0.0)
 			+ (delta * Input.get_axis("ui_left", "ui_right")),
 			)
 
 	var v_axis:= Input.get_axis("ui_up", "ui_down")
 	if v_axis:
 		e.set(GFColorRect.size,
-			e.get(GFColorRect.size, 0 ,Vector2.ZERO)
+			e.get(GFColorRect.size ,Vector2.ZERO)
 			- Vector2(0, 100 * delta * v_axis),
 			)
 
@@ -76,22 +53,14 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept"):
 		e.set(GFColorRect.color, Color(randf(), randf(), randf()))
 		c.set(GFColorRect.color, Color(randf(), randf(), randf()))
-<<<<<<< Updated upstream
 
-	e.set(GFSkew2D,
-		e.get(GFSkew2D, 0, 0.0)
-		+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
-		* delta
-		)
-=======
 
 	if Input.is_key_pressed(KEY_6) or Input.is_key_pressed(KEY_5):
 		e.set(GFSkew2D,
-			e.get(GFSkew2D, 0, 0.0)
+			e.get(GFSkew2D, 0.0)
 			+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
 			* delta
 			)
->>>>>>> Stashed changes
 
 func _input(event: InputEvent) -> void:
 	if Input.is_key_pressed(KEY_1):

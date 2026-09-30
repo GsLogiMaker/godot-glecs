@@ -35,9 +35,9 @@ void initialize_module(ModuleInitializationLevel p_level) {
 			godot::ClassDB::register_class<GFEntity>();
 			godot::ClassDB::register_abstract_class<GFPair>();
 			godot::ClassDB::register_class<GFRegisterableEntity>();
+			godot::ClassDB::register_class<GFTag>();
 			godot::ClassDB::register_class<GFComponent>();
 			godot::ClassDB::register_class<GFModule>();
-			godot::ClassDB::register_class<GFTag>();
 
 			godot::ClassDB::register_class<GFEntityBuilder>();
 			godot::ClassDB::register_class<GFComponentBuilder>();
