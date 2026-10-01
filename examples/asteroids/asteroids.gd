@@ -1,5 +1,5 @@
 
-extends Node2D
+extends Node
 
 
 var texture:= load("res://icon.png")
@@ -9,71 +9,27 @@ var c:GFEntity
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	e = GFEntity.new()
+	e.set(GFSprite2D.offset, Vector2(1, 1))
 	e.set_name("Test")
 	e.add(GFSprite2D)
 	e.set(GFSprite2D, load("res://icon.png"))
-	print("pre center")
-	e.add(GFSprite2D.centered)
 
 
 func _process(delta: float) -> void:
 	GFWorld.get_default_world().progress(0)
 
-	if Input.get_axis("ui_left", "ui_right"):
-		e.set(GFRotation2D,
-			e.get(GFRotation2D, 0.0)
-			+ (delta * Input.get_axis("ui_left", "ui_right")),
-			)
-
-	var v_axis:= Input.get_axis("ui_up", "ui_down")
-	if v_axis:
-		e.set(GFColorRect.size,
-			e.get(GFColorRect.size ,Vector2.ZERO)
-			- Vector2(0, 100 * delta * v_axis),
-			)
-
-	if Input.is_action_just_pressed("ui_text_delete"):
-		if e.has(GFCanvasItem.hidden):
-			e.remove(GFCanvasItem.hidden)
-		else:
-			e.add(GFCanvasItem.hidden)
-
-	if Input.is_action_just_pressed("ui_end"):
-		if e.has(GFCanvasItem.clip_children):
-			e.remove(GFCanvasItem.clip_children)
-		else:
-			e.add(GFCanvasItem.clip_children)
-
-	if Input.is_action_just_pressed("ui_focus_next"):
-		if c.has(GFCanvasItem.use_parent_material):
-			c.remove(GFCanvasItem.use_parent_material)
-		else:
-			c.add(GFCanvasItem.use_parent_material)
-
-	if Input.is_action_just_pressed("ui_accept"):
-		e.set(GFColorRect.color, Color(randf(), randf(), randf()))
-		c.set(GFColorRect.color, Color(randf(), randf(), randf()))
+func _on_centered_pressed() -> void:
+	if e.has(GFSprite2D.centered):
+		e.remove(GFSprite2D.centered)
+	else:
+		e.add(GFSprite2D.centered)
 
 
-	if Input.is_key_pressed(KEY_6) or Input.is_key_pressed(KEY_5):
-		e.set(GFSkew2D,
-			e.get(GFSkew2D, 0.0)
-			+ (int(Input.is_key_pressed(KEY_6)) - int(Input.is_key_pressed(KEY_5)))
-			* delta
-			)
+func _on_offset_x_value_changed(value: float) -> void:
+	var offset = e.get(GFSprite2D.offset, Vector2())
+	e.set(GFSprite2D.offset, Vector2(value, offset.y))
 
-func _input(event: InputEvent) -> void:
-	if Input.is_key_pressed(KEY_1):
-		e.set(GFCanvasItem.modulate, Color(randf(), randf(), randf()))
-	if Input.is_key_pressed(KEY_2):
-		if e.has(GFCanvasItem.modulate):
-			e.remove(GFCanvasItem.modulate)
-		else:
-			e.add(GFCanvasItem.modulate)
-	if Input.is_key_pressed(KEY_3):
-		e.set(GFCanvasItem.self_modulate, Color(randf(), randf(), randf()))
-	if Input.is_key_pressed(KEY_4):
-		if e.has(GFCanvasItem.self_modulate):
-			e.remove(GFCanvasItem.self_modulate)
-		else:
-			e.add(GFCanvasItem.self_modulate)
+
+func _on_offset_y_value_changed(value: float) -> void:
+	var offset = e.get(GFSprite2D.offset, Vector2())
+	e.set(GFSprite2D.offset, Vector2(offset.x, value))

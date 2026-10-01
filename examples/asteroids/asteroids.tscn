@@ -2,5 +2,46 @@
 
 [ext_resource type="Script" path="res://addons/glecs/examples/asteroids/asteroids.gd" id="1_i0ls5"]
 
-[node name="Asteroids" type="Node2D"]
+[node name="Asteroids" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_i0ls5")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GFSprite2D" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/GFSprite2D"]
+layout_mode = 2
+text = "GFSprite2D: "
+
+[node name="Centered" type="Button" parent="VBoxContainer/GFSprite2D"]
+layout_mode = 2
+text = "Centered"
+
+[node name="OffsetX" type="SpinBox" parent="VBoxContainer/GFSprite2D"]
+layout_mode = 2
+prefix = "X"
+
+[node name="OffsetY" type="SpinBox" parent="VBoxContainer/GFSprite2D"]
+layout_mode = 2
+prefix = "Y"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[connection signal="pressed" from="VBoxContainer/GFSprite2D/Centered" to="." method="_on_centered_pressed"]
+[connection signal="value_changed" from="VBoxContainer/GFSprite2D/OffsetX" to="." method="_on_offset_x_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/GFSprite2D/OffsetY" to="." method="_on_offset_y_value_changed"]
